@@ -1,0 +1,9 @@
+node_modules/
+.tools/
+dist/
+coverage/
+pnpm-lock.yaml
+# Preserve the supplied specification and its PACK_SHA256.json checksums.
+project_roadmap/
+# Intentionally malformed parser fixture.
+tests/fixtures/news/malformed.json

@@ -1,0 +1,182 @@
+{
+  "schemaVersion": "news-registry.v1",
+  "providers": [
+    {
+      "schemaVersion": "news-provider.v1",
+      "id": "fixture-news",
+      "version": "fixture-news.v1",
+      "kind": "FIXTURE",
+      "enabled": true,
+      "reference": "fixture://locally-authored/news",
+      "knownAt": "2026-01-01T00:00:00Z"
+    },
+    {
+      "schemaVersion": "news-provider.v1",
+      "id": "optional-rss",
+      "version": "fixture-news.v1",
+      "kind": "RSS_ATOM",
+      "enabled": false,
+      "reference": "No live source approved in this iteration",
+      "knownAt": "2026-01-01T00:00:00Z"
+    },
+    {
+      "schemaVersion": "news-provider.v1",
+      "id": "optional-gdelt",
+      "version": "fixture-news.v1",
+      "kind": "GDELT",
+      "enabled": false,
+      "reference": "https://www.gdeltproject.org/",
+      "knownAt": "2026-01-01T00:00:00Z"
+    }
+  ],
+  "sources": [
+    {
+      "schemaVersion": "news-source.v1",
+      "id": "fixture:official",
+      "version": 1,
+      "providerId": "fixture-news",
+      "owner": "Locally authored synthetic official",
+      "region": "SYNTHETIC",
+      "reliabilityNotes": "Synthetic attributable publication; attribution is not proof of truth.",
+      "publicationType": "OFFICIAL_SECURITY",
+      "independenceGroup": "owner:synthetic-security",
+      "languages": ["en"],
+      "feedUrl": "https://official.example.invalid/feed.xml",
+      "articleOrigins": ["https://official.example.invalid"],
+      "format": "RSS2",
+      "accessMethod": "FIXTURE",
+      "updateCadenceSeconds": 60,
+      "polling": {
+        "minIntervalSeconds": 60,
+        "maxRequestsPerDay": 120
+      },
+      "allowedFields": ["id", "url", "title", "language", "publishedAt", "updatedAt", "snippet"],
+      "licensing": {
+        "policy": "SYNTHETIC",
+        "reference": "fixture://locally-authored/news",
+        "restrictions": "Locally authored fixture text only; no real publisher rights implied.",
+        "permitsSnippet": true,
+        "maxSnippetChars": 200,
+        "permitsRawStorage": true,
+        "approvedForLive": false
+      },
+      "limits": {
+        "maxBytes": 32768,
+        "maxItems": 10,
+        "timeoutMs": 1000
+      },
+      "knownAt": "2026-01-01T00:00:00Z"
+    },
+    {
+      "schemaVersion": "news-source.v1",
+      "id": "fixture:independent",
+      "version": 1,
+      "providerId": "fixture-news",
+      "owner": "Locally authored synthetic independent",
+      "region": "SYNTHETIC",
+      "reliabilityNotes": "Synthetic attributable publication; attribution is not proof of truth.",
+      "publicationType": "INDEPENDENT_REPORTING",
+      "independenceGroup": "wire:synthetic-report",
+      "languages": ["ru", "en"],
+      "feedUrl": "https://report.example.invalid/feed.xml",
+      "articleOrigins": ["https://report.example.invalid"],
+      "format": "ATOM",
+      "accessMethod": "FIXTURE",
+      "updateCadenceSeconds": 60,
+      "polling": {
+        "minIntervalSeconds": 60,
+        "maxRequestsPerDay": 120
+      },
+      "allowedFields": ["id", "url", "title", "language", "publishedAt", "updatedAt", "snippet"],
+      "licensing": {
+        "policy": "SYNTHETIC",
+        "reference": "fixture://locally-authored/news",
+        "restrictions": "Locally authored fixture text only; no real publisher rights implied.",
+        "permitsSnippet": true,
+        "maxSnippetChars": 200,
+        "permitsRawStorage": true,
+        "approvedForLive": false
+      },
+      "limits": {
+        "maxBytes": 32768,
+        "maxItems": 10,
+        "timeoutMs": 1000
+      },
+      "knownAt": "2026-01-01T00:00:00Z"
+    },
+    {
+      "schemaVersion": "news-source.v1",
+      "id": "fixture:syndicated",
+      "version": 1,
+      "providerId": "fixture-news",
+      "owner": "Locally authored synthetic syndicated",
+      "region": "SYNTHETIC",
+      "reliabilityNotes": "Synthetic dependent copy; shares the reporter independence group.",
+      "publicationType": "SYNDICATED",
+      "independenceGroup": "wire:synthetic-report",
+      "languages": ["en"],
+      "feedUrl": "https://synd.example.invalid/feed.json",
+      "articleOrigins": ["https://synd.example.invalid"],
+      "format": "JSON_FEED_1_1",
+      "accessMethod": "FIXTURE",
+      "updateCadenceSeconds": 60,
+      "polling": {
+        "minIntervalSeconds": 60,
+        "maxRequestsPerDay": 120
+      },
+      "allowedFields": ["id", "url", "title", "language", "publishedAt", "updatedAt"],
+      "licensing": {
+        "policy": "SYNTHETIC",
+        "reference": "fixture://locally-authored/news",
+        "restrictions": "Synthetic metadata-only policy; do not retain body/snippet.",
+        "permitsSnippet": false,
+        "maxSnippetChars": 0,
+        "permitsRawStorage": false,
+        "approvedForLive": false
+      },
+      "limits": {
+        "maxBytes": 32768,
+        "maxItems": 10,
+        "timeoutMs": 1000
+      },
+      "knownAt": "2026-01-01T00:00:00Z"
+    },
+    {
+      "schemaVersion": "news-source.v1",
+      "id": "fixture:rumor",
+      "version": 1,
+      "providerId": "fixture-news",
+      "owner": "Locally authored synthetic rumor",
+      "region": "SYNTHETIC",
+      "reliabilityNotes": "Explicitly false synthetic rumor; no verified claim.",
+      "publicationType": "UNVERIFIED_RUMOR",
+      "independenceGroup": "rumor:synthetic",
+      "languages": ["en"],
+      "feedUrl": "https://rumor.example.invalid/feed.json",
+      "articleOrigins": ["https://rumor.example.invalid"],
+      "format": "JSON_FEED_1_1",
+      "accessMethod": "FIXTURE",
+      "updateCadenceSeconds": 60,
+      "polling": {
+        "minIntervalSeconds": 60,
+        "maxRequestsPerDay": 120
+      },
+      "allowedFields": ["id", "url", "title", "language", "publishedAt", "updatedAt", "snippet"],
+      "licensing": {
+        "policy": "SYNTHETIC",
+        "reference": "fixture://locally-authored/news",
+        "restrictions": "Locally authored fixture text only; no real publisher rights implied.",
+        "permitsSnippet": true,
+        "maxSnippetChars": 200,
+        "permitsRawStorage": true,
+        "approvedForLive": false
+      },
+      "limits": {
+        "maxBytes": 32768,
+        "maxItems": 10,
+        "timeoutMs": 1000
+      },
+      "knownAt": "2026-01-01T00:00:00Z"
+    }
+  ]
+}

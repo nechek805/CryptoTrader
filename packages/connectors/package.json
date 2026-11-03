@@ -1,0 +1,22 @@
+{
+  "name": "@crypto/connectors",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@crypto/contracts": "workspace:*",
+    "@crypto/core": "workspace:*",
+    "csv-parse": "7.0.3",
+    "ipaddr.js": "2.5.0",
+    "sax": "1.6.1",
+    "yauzl": "3.4.0",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/sax": "1.2.7",
+    "@types/yauzl": "3.4.0"
+  }
+}

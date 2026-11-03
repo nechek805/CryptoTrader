@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "synthetic-news-review-cases.v1",
+  "cases": [
+    {
+      "id": "verified",
+      "observedAt": "2026-01-01T00:08:00Z",
+      "processedAt": "2026-01-01T00:08:01Z",
+      "availabilityEvidence": "OBSERVED",
+      "published": "Thu, 01 Jan 2026 00:00:00 +0000",
+      "liveParser": false
+    },
+    {
+      "id": "archived",
+      "observedAt": "2026-01-01T00:09:00Z",
+      "processedAt": "2026-01-01T00:09:01Z",
+      "availabilityEvidence": "ARCHIVED_CAPTURE",
+      "published": "Wed, 31 Dec 2025 00:00:00 +0000",
+      "liveParser": false
+    },
+    {
+      "id": "unknown",
+      "observedAt": "2026-01-01T00:10:00Z",
+      "processedAt": "2026-01-01T00:10:01Z",
+      "availabilityEvidence": "UNKNOWN",
+      "published": "Wed, 01 Jan 2020 00:00:00 +0000",
+      "liveParser": false
+    },
+    {
+      "id": "uncertain",
+      "observedAt": "2026-01-01T00:11:00Z",
+      "processedAt": "2026-01-01T00:11:01Z",
+      "availabilityEvidence": "OBSERVED",
+      "published": "Thu, 01 Jan 26 00:00:00 +0000",
+      "liveParser": true
+    },
+    {
+      "id": "rejected",
+      "observedAt": "2026-01-01T00:12:00Z",
+      "processedAt": "2026-01-01T00:12:01Z",
+      "availabilityEvidence": "OBSERVED",
+      "published": "synthetic invalid timestamp",
+      "liveParser": false
+    }
+  ]
+}

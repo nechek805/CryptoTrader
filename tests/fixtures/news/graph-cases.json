@@ -1,0 +1,122 @@
+{
+  "schemaVersion": "synthetic-news-graph-cases.v1",
+  "cases": [
+    {
+      "id": "wire",
+      "source": "wire",
+      "publicationType": "INDEPENDENT_REPORTING",
+      "group": "wire:synthetic",
+      "minute": 1,
+      "path": "alpha",
+      "text": "Synthetic Vault independently reported a security incident for case ALPHA-1 involving BTC and 10 USD on 2026-01-01."
+    },
+    {
+      "id": "copy-one",
+      "source": "copy-one",
+      "publicationType": "SYNDICATED",
+      "group": "wire:synthetic",
+      "minute": 2,
+      "path": "alpha",
+      "text": "Synthetic Vault reported a security incident for case ALPHA-1 involving BTC and 10 USD on 2026-01-01; wire reprint of https://wire.example.invalid/articles/alpha"
+    },
+    {
+      "id": "copy-two",
+      "source": "copy-two",
+      "publicationType": "SYNDICATED",
+      "group": "channel:two",
+      "minute": 3,
+      "path": "alpha",
+      "text": "Synthetic Vault described a security incident for case ALPHA-1 involving BTC and 10 USD on 2026-01-01; rewrite of https://copy-one.example.invalid/articles/alpha"
+    },
+    {
+      "id": "copy-three",
+      "source": "copy-three",
+      "publicationType": "INDEPENDENT_REPORTING",
+      "group": "channel:three",
+      "minute": 4,
+      "path": "alpha",
+      "text": "Synthetic Vault independently reported a security incident for case ALPHA-1 involving BTC and 10 USD on 2026-01-01; cites https://wire.example.invalid/articles/alpha"
+    },
+    {
+      "id": "independent-one",
+      "source": "independent-one",
+      "publicationType": "INDEPENDENT_REPORTING",
+      "group": "reporter:one",
+      "minute": 5,
+      "path": "beta",
+      "text": "Synthetic Vault independently reported a security incident for case BETA-1 involving BTC and 10 USD on 2026-01-02. Separate interviews formed the evidence."
+    },
+    {
+      "id": "independent-two",
+      "source": "independent-two",
+      "publicationType": "INDEPENDENT_REPORTING",
+      "group": "reporter:two",
+      "minute": 6,
+      "path": "beta",
+      "text": "After a direct investigation, Synthetic Vault observed first-hand a security incident for case BETA-1 involving BTC and 10 USD on 2026-01-02. Local records informed its separate analysis."
+    },
+    {
+      "id": "quote",
+      "source": "quote",
+      "publicationType": "INDEPENDENT_REPORTING",
+      "group": "reporter:quote",
+      "minute": 7,
+      "path": "gamma",
+      "text": "Synthetic Vault reported a security incident for case GAMMA-1 involving BTC and 10 USD on 2026-01-03; quotes official https://official.example.invalid/articles/gamma"
+    },
+    {
+      "id": "official",
+      "source": "official",
+      "publicationType": "OFFICIAL_SECURITY",
+      "group": "official:synthetic",
+      "minute": 8,
+      "path": "gamma",
+      "text": "Synthetic Vault officially stated a security incident for case GAMMA-1 involving BTC and 10 USD on 2026-01-03."
+    },
+    {
+      "id": "denial",
+      "source": "denial",
+      "publicationType": "INDEPENDENT_REPORTING",
+      "group": "reporter:denial",
+      "minute": 9,
+      "path": "beta-denial",
+      "text": "Synthetic Vault did not report a security incident for case BETA-1 involving BTC and 10 USD on 2026-01-02."
+    },
+    {
+      "id": "distinct",
+      "source": "independent-one",
+      "publicationType": "INDEPENDENT_REPORTING",
+      "group": "reporter:one",
+      "minute": 10,
+      "path": "beta-two",
+      "text": "Synthetic Vault independently reported a security incident for case BETA-2 involving BTC and 10 USD on 2026-01-02."
+    },
+    {
+      "id": "inferred-copy",
+      "source": "inferred-copy",
+      "publicationType": "INDEPENDENT_REPORTING",
+      "group": "reporter:inferred",
+      "minute": 11,
+      "path": "alpha",
+      "text": "Synthetic Vault independently reported a security incident for case ALPHA-1 involving BTC and 10 USD on 2026-01-01."
+    },
+    {
+      "id": "unanchored",
+      "source": "unanchored",
+      "publicationType": "INDEPENDENT_REPORTING",
+      "group": "reporter:unknown",
+      "minute": 12,
+      "path": "unknown",
+      "text": "Synthetic Vault independently reported a security incident involving BTC and 10 USD on 2026-01-02."
+    },
+    {
+      "id": "currency-detail",
+      "source": "independent-two",
+      "publicationType": "INDEPENDENT_REPORTING",
+      "group": "reporter:two",
+      "minute": 13,
+      "path": "beta-eur",
+      "text": "Synthetic Vault observed first-hand a security incident for case BETA-1 involving BTC and 10 EUR on 2026-01-02."
+    }
+  ]
+}

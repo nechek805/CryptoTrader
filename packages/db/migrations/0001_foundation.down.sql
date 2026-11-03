@@ -1,0 +1,11 @@
+DROP VIEW {{schema}}.news_document_versions;
+DROP VIEW {{schema}}.market_bar_versions;
+DROP TABLE {{schema}}.audit_entries;
+DROP TABLE {{schema}}.retention_marks;
+DROP TABLE {{schema}}.research_inputs;
+DROP TABLE {{schema}}.research_records;
+DROP TABLE {{schema}}.derived_sources;
+DROP TABLE {{schema}}.derived_records;
+DROP TABLE {{schema}}.raw_delivery_keys;
+DROP TABLE {{schema}}.raw_events;
+DROP FUNCTION {{schema}}.reject_mutation();

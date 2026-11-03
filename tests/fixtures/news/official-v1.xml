@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel><title>Synthetic security notices</title><language>en</language><item><guid isPermaLink="false">security-1</guid><link>https://official.example.invalid/notices/1</link><title>Synthetic security maintenance scheduled</title><pubDate>Thu, 01 Jan 2026 03:00:00 +0300</pubDate><description>Locally invented security statement for parser tests.</description></item></channel></rss>

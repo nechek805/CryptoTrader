@@ -1,0 +1,39 @@
+name: Foundation checks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.34.9
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm run doctor
+      - run: pnpm smoke
+      - run: pnpm demo:contracts
+      - if: runner.os == 'Linux'
+        run: docker compose up -d --wait
+      - if: runner.os == 'Linux'
+        run: pnpm test:integration
+        env:
+          TEST_DATABASE_URL: postgresql://research@127.0.0.1:5432/crypto_research
+      - if: always() && runner.os == 'Linux'
+        run: docker compose down

@@ -1,0 +1,50 @@
+name: crypto-intelligence-research
+
+services:
+  postgres:
+    image: postgres:17.6-alpine
+    command:
+      [
+        'postgres',
+        '-c',
+        'log_parameter_max_length=0',
+        '-c',
+        'log_parameter_max_length_on_error=0',
+        '-c',
+        'log_error_verbosity=terse',
+      ]
+    environment:
+      POSTGRES_DB: crypto_research
+      POSTGRES_USER: research
+      # Local loopback-only development; no password or production access implied.
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - '127.0.0.1:5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U research -d crypto_research']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.4.6-alpine
+    command: ['redis-server', '--appendonly', 'yes']
+    ports:
+      - '127.0.0.1:6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:

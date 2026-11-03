@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "news-fixture-list.v1",
+  "captures": [
+    {
+      "id": "official-v1",
+      "file": "official-v1.xml",
+      "sourceId": "fixture:official",
+      "sourceVersion": 1,
+      "observedAt": "2026-01-01T00:01:00Z",
+      "processedAt": "2026-01-01T00:01:01Z",
+      "availabilityEvidence": "OBSERVED"
+    },
+    {
+      "id": "independent",
+      "file": "independent.xml",
+      "sourceId": "fixture:independent",
+      "sourceVersion": 1,
+      "observedAt": "2026-01-01T00:02:00Z",
+      "processedAt": "2026-01-01T00:02:01Z",
+      "availabilityEvidence": "OBSERVED"
+    },
+    {
+      "id": "syndicated",
+      "file": "syndicated.json",
+      "sourceId": "fixture:syndicated",
+      "sourceVersion": 1,
+      "observedAt": "2026-01-01T00:03:00Z",
+      "processedAt": "2026-01-01T00:03:01Z",
+      "availabilityEvidence": "OBSERVED"
+    },
+    {
+      "id": "rumor",
+      "file": "rumor.json",
+      "sourceId": "fixture:rumor",
+      "sourceVersion": 1,
+      "observedAt": "2026-01-01T00:04:00Z",
+      "processedAt": "2026-01-01T00:04:01Z",
+      "availabilityEvidence": "OBSERVED"
+    },
+    {
+      "id": "official-v2",
+      "file": "official-v2.xml",
+      "sourceId": "fixture:official",
+      "sourceVersion": 1,
+      "observedAt": "2026-01-01T00:05:00Z",
+      "processedAt": "2026-01-01T00:05:01Z",
+      "availabilityEvidence": "OBSERVED"
+    },
+    {
+      "id": "malformed-xml",
+      "file": "malformed.xml",
+      "sourceId": "fixture:official",
+      "sourceVersion": 1,
+      "observedAt": "2026-01-01T00:06:00Z",
+      "processedAt": "2026-01-01T00:06:01Z",
+      "availabilityEvidence": "OBSERVED"
+    },
+    {
+      "id": "malformed-json",
+      "file": "malformed.json",
+      "sourceId": "fixture:rumor",
+      "sourceVersion": 1,
+      "observedAt": "2026-01-01T00:07:00Z",
+      "processedAt": "2026-01-01T00:07:01Z",
+      "availabilityEvidence": "OBSERVED"
+    }
+  ]
+}

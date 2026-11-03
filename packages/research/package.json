@@ -1,0 +1,19 @@
+{
+  "name": "@crypto/research",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@crypto/contracts": "workspace:*",
+    "@crypto/core": "workspace:*",
+    "@crypto/connectors": "workspace:*",
+    "@crypto/db": "workspace:*",
+    "@crypto/news": "workspace:*",
+    "decimal.js": "10.6.0",
+    "@duckdb/node-api": "1.4.4-r.1",
+    "zod": "4.6.7"
+  }
+}

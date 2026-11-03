@@ -1,0 +1,16 @@
+{
+  "name": "@crypto/cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@crypto/api": "workspace:*",
+    "@crypto/contracts": "workspace:*",
+    "@crypto/core": "workspace:*",
+    "@crypto/connectors": "workspace:*",
+    "@crypto/research": "workspace:*",
+    "@crypto/db": "workspace:*",
+    "@crypto/worker": "workspace:*",
+    "@crypto/news": "workspace:*"
+  }
+}

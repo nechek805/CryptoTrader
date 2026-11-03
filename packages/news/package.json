@@ -1,0 +1,16 @@
+{
+  "name": "@crypto/news",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@crypto/contracts": "workspace:*",
+    "@crypto/core": "workspace:*",
+    "@crypto/connectors": "workspace:*",
+    "@crypto/db": "workspace:*",
+    "zod": "4.6.7"
+  }
+}

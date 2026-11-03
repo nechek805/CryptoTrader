@@ -1,0 +1,7 @@
+{
+  "schemaVersion": "bootstrap.v1",
+  "mode": "fixture-only",
+  "fixtureAsOf": "2026-01-01T00:00:00.000Z",
+  "description": "Synthetic startup inventory; contains no observed prices, news or trading signals.",
+  "instruments": ["BTC/USDT", "ETH/USDT", "SOL/USDT"]
+}

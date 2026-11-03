@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "synthetic-news-temporal-cases.v1",
+  "cases": [
+    {
+      "id": "rumor",
+      "publicationType": "UNVERIFIED_RUMOR",
+      "at": "2026-01-01T09:10:00Z",
+      "publishedAt": "2026-01-01T08:30:00Z",
+      "text": "Synthetic Vault may report a security incident for case TIMED-1 involving BTC and 10 USD on 2026-01-01."
+    },
+    {
+      "id": "repost",
+      "publicationType": "SYNDICATED",
+      "at": "2026-01-01T09:15:00Z",
+      "publishedAt": "2026-01-01T09:15:00Z",
+      "text": "Synthetic Vault reported a security incident for case TIMED-1 involving BTC and 10 USD on 2026-01-01; wire reprint of https://rumor.example.invalid/timed"
+    },
+    {
+      "id": "first-report",
+      "publicationType": "INDEPENDENT_REPORTING",
+      "at": "2026-01-01T09:20:00Z",
+      "publishedAt": "2026-01-01T09:20:00Z",
+      "text": "Synthetic Vault independently reported a security incident for case TIMED-1 involving BTC and 10 USD on 2026-01-01. Separate interviews supplied the report."
+    },
+    {
+      "id": "confirmation",
+      "publicationType": "INDEPENDENT_REPORTING",
+      "at": "2026-01-01T10:00:00Z",
+      "publishedAt": "2026-01-01T10:00:00Z",
+      "text": "Following a local investigation, Synthetic Vault observed first-hand a security incident for case TIMED-1 involving BTC and 10 USD on 2026-01-01. Different records supplied separate evidence."
+    },
+    {
+      "id": "official",
+      "publicationType": "OFFICIAL_SECURITY",
+      "at": "2026-01-01T10:10:00Z",
+      "publishedAt": "2026-01-01T10:10:00Z",
+      "text": "Synthetic Vault officially stated a security incident for case TIMED-1 involving BTC and 10 USD on 2026-01-01."
+    },
+    {
+      "id": "denial",
+      "publicationType": "INDEPENDENT_REPORTING",
+      "at": "2026-01-01T10:20:00Z",
+      "publishedAt": "2026-01-01T10:20:00Z",
+      "text": "Synthetic Vault did not report a security incident for case TIMED-1 involving BTC and 10 USD on 2026-01-01."
+    },
+    {
+      "id": "late-report",
+      "publicationType": "INDEPENDENT_REPORTING",
+      "at": "2026-01-01T11:00:00Z",
+      "publishedAt": "2026-01-01T11:00:00Z",
+      "text": "Through its independent inquiry, Synthetic Vault observed first-hand a security incident for case TIMED-1 involving BTC and 10 USD on 2026-01-01. Additional accounts emerged after curation."
+    }
+  ]
+}

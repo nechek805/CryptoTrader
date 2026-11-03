@@ -1,0 +1,70 @@
+{
+  "00_MANIFEST.md": {
+    "bytes": 5713,
+    "sha256": "624c675f181bbbbcd40455c95aae2b4b9974828d575259781ad7cc8aedbd0c4e"
+  },
+  "01_MASTER_PROMPT.md": {
+    "bytes": 9683,
+    "sha256": "bb02d819fd8a539bf617be9d4c874edad7e56f1232a9d6442212d946458c29f8"
+  },
+  "02_FOUNDATION_AND_CONTRACTS.md": {
+    "bytes": 3451,
+    "sha256": "83fe531169b4299d3d9b1dfa3dedf0f24d87d0218ea8b13e3d29c590f506adff"
+  },
+  "03_MARKET_DATA.md": {
+    "bytes": 3050,
+    "sha256": "d8808baad4256765c1a1a198fb1334270467a95432dc005557f164ba43f7b91f"
+  },
+  "04_NEWS_INGESTION.md": {
+    "bytes": 3141,
+    "sha256": "6996bda27b9abac1cf86fb536fb7310fe8148516d65f0ccdeefafa275a8bc479"
+  },
+  "05_NEWS_PROVENANCE.md": {
+    "bytes": 3072,
+    "sha256": "a6e91bbe1b8d3c030e84205babf01a4972bc30874a44fa37c45504913b5249c5"
+  },
+  "06_HISTORICAL_EVENT_RESEARCH.md": {
+    "bytes": 3008,
+    "sha256": "dc4220ac460a9030c7811416f9157d7cb2a202382311da00bc08751269e55a92"
+  },
+  "07_FEATURE_STORE.md": {
+    "bytes": 2721,
+    "sha256": "db0191ecf0e8dc351d49b2d52bc0c233594533e06e4b1d890fcf50a9ea30aa7c"
+  },
+  "08_BACKTEST_ENGINE.md": {
+    "bytes": 2801,
+    "sha256": "bb7262a85b6bb16407a91722b61993edc1c02f7c96140630284f21ccc2a0558a"
+  },
+  "09_MARKET_STRATEGIES.md": {
+    "bytes": 2804,
+    "sha256": "66db37ed0d3fc462a5e23832eeb16015f2bfd352efa697211fff1b1a2572dda2"
+  },
+  "10_NEWS_STRATEGIES.md": {
+    "bytes": 2810,
+    "sha256": "75c0dccf97c5368d06f317cdd1c25d31531729606de483d0b7fa1a5c6ee94d7c"
+  },
+  "11_FUSION_AND_RISK.md": {
+    "bytes": 2744,
+    "sha256": "47b72148f5b0db1ab6e0b7f4363267ed2614ac7e2b7ae2ae661ac83f60fcf6da"
+  },
+  "12_PAPER_BROKER.md": {
+    "bytes": 2768,
+    "sha256": "5b14da6aef1a461d9457c614e3bda5d3d2427d6341082e962384a72b98c52783"
+  },
+  "13_EVALUATION.md": {
+    "bytes": 2712,
+    "sha256": "d96180dc02cf8da5b0c9c3f6c9c52bb4b6ec80639abcab0caf1d0bbefd87f5aa"
+  },
+  "14_DASHBOARD_AND_OPERATIONS.md": {
+    "bytes": 2605,
+    "sha256": "7cf5d9fd96bb82426b9f72d0b05b5cc6ba656290ec17719648d2e4f1a64c9e27"
+  },
+  "15_EXPERIMENT_PROTOCOL.md": {
+    "bytes": 4498,
+    "sha256": "8db77dc6c1c099473200d80276393c058310968625a9b79ec49246652957e9bf"
+  },
+  "16_FUTURE_OPTIONS.md": {
+    "bytes": 3644,
+    "sha256": "7d80fecc6f55439d94aaa6037e428b5942b1c6388f2dce205d5afeae8326dadc"
+  }
+}
