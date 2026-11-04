@@ -11,6 +11,8 @@ export {
   validateSpotSimulationArtifact,
 } from './spot-simulator.js';
 export { reconcileSpotJournal } from './spot-ledger.js';
+export { SpotLedger } from './spot-ledger.js';
+export * from './btc-test.js';
 export * from './spot-fixture.js';
 export * from './spot-artifact.js';
 export * from './backtest.js';

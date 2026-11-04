@@ -7,9 +7,15 @@
     ".": "./src/app.ts"
   },
   "dependencies": {
+    "@crypto/backtest": "workspace:*",
     "@crypto/contracts": "workspace:*",
     "@crypto/core": "workspace:*",
     "@crypto/worker": "workspace:*",
+    "@crypto/evaluation": "workspace:*",
+    "@crypto/paper": "workspace:*",
+    "@crypto/news": "workspace:*",
+    "@crypto/research": "workspace:*",
+    "zod": "4.6.7",
     "fastify": "5.12.7"
   }
 }

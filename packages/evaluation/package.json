@@ -2,5 +2,19 @@
   "name": "@crypto/evaluation",
   "version": "0.1.0",
   "private": true,
-  "type": "module"
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@crypto/backtest": "workspace:*",
+    "@crypto/contracts": "workspace:*",
+    "@crypto/core": "workspace:*",
+    "@crypto/paper": "workspace:*",
+    "@crypto/risk": "workspace:*",
+    "@crypto/news": "workspace:*",
+    "decimal.js": "10.6.0",
+    "yaml": "2.9.1",
+    "zod": "4.6.7"
+  }
 }

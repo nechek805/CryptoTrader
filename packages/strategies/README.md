@@ -27,4 +27,7 @@ chronological validation and cost/uncertainty abstention. See
 Iteration 3 adds explainNewsSignal/explainNewsDecision, immutable evidence descriptions
 and an offline adversarial/held-out evaluation handoff. See
 [news replay and handoff](../../../docs/news-audit.md) and ADR 0027.
-Fusion, general risk and forward promotion remain later work.
+Module 11 adds isolated four-arm orchestration and frozen conservative fusion. General
+risk is implemented separately by @crypto/risk; execution remains @crypto/paper. Module
+15 freezes forward-study controls. Promotion still requires the declared data, elapsed
+time and evidence gates; no real-money execution exists.

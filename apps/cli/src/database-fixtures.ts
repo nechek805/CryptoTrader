@@ -19,18 +19,28 @@ export async function workingTreeVersion(): Promise<string> {
   async function visit(path: string): Promise<void> {
     const children = await readdir(path, { withFileTypes: true });
     for (const child of children) {
-      if (['node_modules', '.tools', '.git'].includes(child.name)) continue;
+      if (['node_modules', '.tools', '.git', '.next', 'dist', 'coverage'].includes(child.name))
+        continue;
+      if (child.name === 'next-env.d.ts') continue;
       const target = join(path, child.name);
       if (child.isDirectory()) await visit(target);
-      else if (/\.(?:ts|sql|json|ya?ml|mjs)$/.test(child.name))
+      else if (/\.(?:tsx?|css|sql|json|ya?ml|mjs)$/.test(child.name))
         entries.push({
           path: relative(root, target).replaceAll('\\', '/'),
           content: (await readFile(target, 'utf8')).replaceAll('\r\n', '\n'),
         });
     }
   }
-  for (const folder of ['apps', 'packages', 'tests/fixtures']) await visit(join(root, folder));
-  for (const file of ['package.json', 'pnpm-lock.yaml', 'tsconfig.base.json'])
+  for (const folder of ['apps', 'packages', 'research_prototypes', 'tests/fixtures'])
+    await visit(join(root, folder));
+  for (const file of [
+    'package.json',
+    'pnpm-lock.yaml',
+    'pnpm-workspace.yaml',
+    'tsconfig.base.json',
+    'tsconfig.json',
+    'eslint.config.mjs',
+  ])
     entries.push({
       path: file,
       content: (await readFile(join(root, file), 'utf8')).replaceAll('\r\n', '\n'),

@@ -32,3 +32,4 @@ export * from './panel-storage.js';
 export * from './panel-client.js';
 export * from './panel-fixture.js';
 export * from './panel-report.js';
+export * from './btc-history.js';

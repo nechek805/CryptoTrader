@@ -5,3 +5,7 @@ packages:
 # Only esbuild's platform binary setup is permitted to run at install time.
 onlyBuiltDependencies:
   - esbuild
+
+# GHSA-g3hv-75wg-m249: no patched 10.x release; scope the override to the vulnerable version.
+overrides:
+  minimatch@10.2.6: 11.0.4

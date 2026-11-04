@@ -6,6 +6,8 @@ import type { RuntimeConfig } from '@crypto/core';
 export { buildMarketQueryApp } from './market-data.js';
 export { buildNewsReviewApp } from './news-review.js';
 export { buildEventStudyApp, buildEventControlsApp } from './event-study.js';
+export { buildOperationsApp } from './operations.js';
+export { operationsFixture } from './operations-fixture.js';
 
 export function buildApp(config: RuntimeConfig, fixtures: FixtureReport) {
   const settings = RuntimeConfigSchema.parse(config);

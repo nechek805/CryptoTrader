@@ -1,11 +1,129 @@
 # Implementation progress
 
-Updated: 2026-11-02 (Europe/Moscow)
+Updated: 2026-11-03 (Europe/Moscow)
 
 ## Current boundary
 
-**Modules 02–10 are complete.** Next is **Module 11, Iteration 1 — Independent
-Strategy Isolation**. Modules 11–16 remain unimplemented.
+Current user-requested extension: a guided `/market-test` dashboard page uses real BTCUSDT
+hourly candles, six calendar months and 10,000 virtual USDT. Public raw responses and
+exact-decimal Parquet are frozen; historical availability stays UNKNOWN. A separate
+retrospective MA20/MA50 + ATR14 runner uses next-open fills, explicit costs, risk/allocation
+caps and a reconciled SpotLedger. The page provides source inspection, assumptions,
+hour-by-hour decisions, virtual fills, comparisons, export and deterministic replay.
+See ADR 0047 and `docs/btc-market-test.md` for provenance, results and limitations.
+Validation: `pnpm check` passes 1,015 tests in 47 files, lint, formatting, backend/web
+typechecks, smoke and contract demo. Production build and doctor pass. Desktop/mobile
+browser acceptance covers source inspection, strategy review, job completion, next-hour
+fill inspection, JSON export, replay verification, refresh without welcome/token flash
+and no horizontal overflow. Final UI contrast/candle-detail/navigation changes pass
+focused lint/type/build verification. All 17 supplied roadmap checksums match. The owned local
+dashboard remains running for the user at `/market-test`.
+
+Latest UX correction: route changes and hard refreshes keep the dashboard layout while
+session/data requests complete, avoiding the brief welcome-panel flash reported by the
+user. Failed initial loads provide retry in the content area. See ADR 0046.
+
+Latest follow-up: user requested removal of the token prompt from the running local
+demo. The fixture dashboard now opens its reader session automatically, with no sign-in
+form; deployment/public datasets cannot enable that path. See ADR 0045. Previous full
+suite results below describe the completed roadmap baseline; this follow-up has focused
+API/security, TypeScript and browser checks. Existing frozen protocols are retained and
+must be replaced by a newly frozen experiment before running changed software.
+
+**All implementation iterations through Module 16 are complete.** Final `pnpm check`
+passes **1,002 tests in 44 files**, lint, formatting, backend/frontend typechecks, smoke
+and contract demo. Production UI build, doctor, frozen-lockfile offline install and both
+dependency audits pass. Acceptance checks cover protocol sessions, queued source clocks,
+daily hard-loss stops, live snapshot refresh, generated-build hash stability and detached
+prototype boundaries. All seventeen supplied roadmap checksums match; owned dashboard
+servers are stopped after desktop/mobile browser inspection.
+
+The committed experiment.yaml records the earlier SYNTHETIC baseline. Its verified
+freeze is data/experiment-freeze-verified/manifest.json,
+experiment_90f2bec95dee3cd6396742e248fdc4365194c733d72ddd77562d1a4363ade004,
+hash sha256:bf60755d608c3ccc96e3a3a5d8843c91204f3a69bfda22b821edfad2675ee73a.
+At that freeze, dry-run reported valid=true, codeUnchanged=true and launchEligible=false.
+Subsequent code changes require a new freeze. Earlier YAML/manifests remain retained.
+
+The actual synthetic month is frozen at
+data/experiments/trial_e60ed9ba22ca2f4924aa93f80863b6db7c5058203d148595ae5bb70a1af8a948/:
+3,109 events, sixteen candidates, thirty fills, thirty daily and five weekly QA outputs,
+one recorded restart and a reconciled ledger. CLI semantic verification reproduces its
+assessment hash. Recommendation: REVISE_AND_RESET. News/fusion each retain a
+99.92554029 USDT loss; market-only retains 67.91133906; cash remains unchanged.
+docs/experiment-2026-11-03-findings.md links raw inputs, hashes and ranked future hypotheses.
+This is not an elapsed public month. Actual licensed acquisition/producer operation,
+provider approval, production capacity and wall time remain external forward-study gates.
+
+Module 16 Iteration 1: RFC 0016 compares a bounded Option D multilingual entity subtrack.
+Iteration 2: detached synthetic-only prototype passes independent process reproduction,
+temporal/ambiguity/confusable/injection and production-import boundary tests. Iteration 3:
+DEFER, with two retained false positives and exact future contract/schema/replay/rights
+and new-experiment requirements (ADR 0043; docs/module16-decision.md). No live connector,
+private keys, real-money mode, commercial launch or frozen-protocol rewrite exists.
+
+Final security follow-up: a full development-dependency scan found two moderate
+advisories after the clean production-only scan. fflate 0.8.3 and a narrowly scoped
+minimatch@10.2.6 → 11.0.4 override resolve them. Full (338 dependencies) and production
+(146 dependencies) scans now report zero findings (ADR 0044). Old freezes remain intact;
+the final example has a new experiment ID and a matching current software hash.
+
+Module 15 Iteration 1: strict bounded YAML, native manifest wrapper, four model/provider
+bindings, hash/time/license/risk gates, new-ID policy and dry-run CLI pass protocol failure
+tests (ADR 0040). Iteration 2: durable session coordinator, immutable inbox/producer
+boundary, native independent-news confirmation gate, UTC scheduling, daily reconciliation,
+heartbeats, correction/duplicate/restart records, daily summaries and weekly QA implemented.
+The 30-day fixture has sixteen candidates in four predeclared windows, thirty fills and
+explicit delayed-confirmation HOLD outcomes; native work budgets remain in force (ADR
+0041). Iteration 3: immutable assessment and nested evidence bundle compare four arms,
+cash/passive endpoints, uncertainty/cost/timing/source failures and separate interruption
+analysis. Synthetic/sparse results cannot become robust alpha or real-money authority.
+See ADR 0042 and docs/experiment.md. Public elapsed-month collection remains a gated
+operational study, requiring reviewed inputs, unchanged code and actual wall time.
+
+Module 14 Iteration 1: authenticated Fastify read APIs and responsive Next.js overview,
+runs, provenance and virtual trades pages pass trace-through-source/cutoff/risk/fill/PnL
+acceptance. Production build and actual local browser trace verified (ADR 0037).
+Iteration 2: actual provenance edges/contradictions, original/corrected snapshots,
+verified native descriptive studies, four-arm uncertainty/drawdown/costs, frozen
+parameters, complete-day correlations and exports implemented. Unattached predictive
+vectors/cross-asset panels remain N/A (ADR 0038). Browser showed two original versus
+seven corrected assertions with different immutable hashes; no history overwrite.
+Iteration 3: role/origin/session controls, bounded rate limits, immutable control
+prefix checks, current accepted source health, content-free errors and replay-verified
+backups pass. A 200-request burst, rate-limit boundary, 300 malformed market packets,
+100 hostile RSS documents and restore checks pass. Production dependency audit: zero
+findings. Desktop trace and mobile (500 CSS px browser minimum) screenshots retained
+under data/dashboard/screenshots. ADR 0039 and docs/dashboard.md include playbook,
+deployment limitations, backup and rollback. All 17 roadmap SHA-256 checks still match.
+
+Module 12 Iteration 1 is now implemented: canonical virtual orders/fills, four independent
+SpotLedger portfolios, idempotent insertion, durable event files, snapshot/prefix restore
+and semantic replay. Strict typecheck and ten acceptance/failure tests pass (ADR 0031).
+Continuing directly to Module 12 Iteration 2.
+Module 12 Iteration 2 acceptance: observed quote/queue-qualified trade execution, modeled
+fees/slippage, adverse protective exits, public read-only source port and reconciled
+equity/PnL are implemented. Strict typecheck and 17 broker/execution tests pass (ADR 0032).
+Continuing to Module 12 Iteration 3 service reliability and observability.
+Module 12 Iteration 3 acceptance: controls, heartbeats, reconciliation, content-free
+quarantine, persistent CLI, snapshots and 24-hour virtual soak pass. The actual local
+store at data/paper/module12-soak has 1,477 events, nine fills, 14 alerts and reconciled
+ledger. Each active arm retains a 61.09693233 USDT loss; baseline remains cash. Typecheck,
+lint, doctor and 23 focused tests pass. See ADR 0033 and docs/paper-broker.md. Full
+regression passes: **950 tests in 34 files**. Continuing to Module 13.
+Module 13 Iteration 1 acceptance: exact/reconciled metrics, N/A ratios, nonuniform-duration
+exposure, partial-day/missingness and paper/backtest adapters implemented. Five focused
+metrics tests and seven execution regressions pass with typecheck (ADR 0034). Continuing
+to Iteration 2 uncertainty and sensitivity.
+Module 13 Iteration 2 acceptance: dependence-aware paired block intervals, declared-search
+correction, embargoed audit splits, insufficient-evidence/tail flags and frozen-candidate
+cost/latency replays pass strict typecheck and 11 combined metrics/statistics tests.
+See ADR 0035. Continuing to Iteration 3 attribution, evidence bundles and decision memo.
+Module 13 Iteration 3 acceptance: versioned four-arm attribution, fixed primary comparison,
+source coverage, calibration/timing disclosures, immutable linked evidence bundles and
+CSV/JSON/Markdown memo implemented. Fifteen focused tests pass. Actual negative and
+misleading-profitable bundles remain searchable; no alpha or real-money authority is
+claimed. See docs/evaluation.md and ADR 0036. Continuing to Module 14 after full regression.
 Original roadmap files and checksums remain unchanged.
 
 The project now has strict domain/time/decimal contracts, fixture operational API/CLI,
@@ -25,7 +143,68 @@ Cross-asset features now use one shared cutoff, historical metadata/book-qualifi
 universe selection, explicit backward joins, measured breadth/turnover concentration,
 deterministic regimes and individually timed optional derivatives.
 
-## Module 10, Iteration 3 deliverables
+## Module 11, Iteration 1 deliverables
+
+Continuation mandate (2026-11-03): the user explicitly requests all remaining modules and
+iterations without stopping at boundaries. Acceptance and handoff remain sequential; the
+earlier instruction to stop after each iteration is overridden for this implementation run.
+
+Module 11 Iteration 2 acceptance: deterministic risk contracts/engine implemented;
+strict typecheck and 17 focused tests pass. See ADR 0029. Continuing to Iteration 3.
+Module 11 Iteration 3 acceptance: immutable DecisionRecord, regime/uncertainty sizing,
+evidence/manifest links, diagnostic counterfactuals, conflicts/contributions/correlation
+implemented. Strict typecheck/lint and 24 combined tests pass. See ADR 0030. Continuing
+to Module 12 after the full regression check.
+
+Added four independently identified candidate portfolios with identical initial virtual
+capital, currency, opportunity grid, prefix snapshot, fees and execution assumptions.
+Cash is the simple baseline. Trusted producer ports receive only immutable own-arm
+opportunity/shared assumptions; no sibling candidates, PnL, positions or outcomes are
+provided. Each submission is immediately cloned and validated. Existing canonical
+candidates and their evidence references are retained without rewriting component state.
+
+Versioned agreement-only (default), disagreement-to-HOLD and weighted-calibrated policies
+require historical TRAIN-only selection receipts and a freeze before every decision.
+Conflict defaults to HOLD. Weighted support requires a matching historical calibration
+artifact and known directional net-return probability; current untrained news rules do
+not qualify. Missing inputs abstain. Exact duplicates collapse; conflicting identities,
+ambiguous opportunities, future evidence and mismatched assumptions reject.
+
+New `fusion-*.v1` schemas and immutable reports preserve complete input, per-arm candidates,
+source/evidence hashes, common assumptions and a chained journal. Semantic verification
+rebuilds every result. `pnpm fusion fixture/run/verify` supports offline synthetic review
+and exclusive output files. The fixture has conflict HOLD, deduplicated agreement LONG
+and explicit-HOLD abstention, with zero orders and no performance/promotion claim.
+
+Files: `packages/contracts/src/fusion.ts`, `packages/strategies/src/fusion*.ts`,
+`apps/cli/src/fusion.ts`, `tests/fusion.test.ts`, `docs/fusion-isolation.md` and ADR 0028.
+No SQL migration, dependency version change or earlier schema change is required.
+Producer closures are trusted in-process code; references do not authenticate external
+reports or replace upstream artifact verification. Full account/risk state remains later work.
+
+Verification on 2026-11-03, pinned Node 24.22.2 / pnpm 10.34.9:
+
+- `pnpm check` passes: lint/format, strict typecheck, **903 offline tests in 29 files**,
+  fixture smoke and the ten-contract demonstration. The **44 new focused tests** pass.
+- Doctor passes with execution disabled and zero orders. Frozen dependency installation
+  passes; dependency versions and lockfile are unchanged. All **17 roadmap files** retain
+  their recorded hashes and byte lengths. No actual PostgreSQL integration run is needed
+  for these additive artifact/strategy interfaces; no persistence implementation changes.
+- Actual CLI fixture, semantic verification and recorded-input replay pass. Original and
+  replayed JSON files are byte-identical. Existing-path overwrite and unsupported/live flags
+  are rejected. The synthetic report contains three windows and four isolated arms.
+
+Local report: `data/fusion/module11-iteration1-synthetic.json`.
+File SHA-256: `1246eecdbbc07557cf3c8ff26e9d87904ece6865fd1e54a42f17c7afc6651e33`.
+Input hash: `sha256:4d1ac5c70521e348be45ef069c04cd3f66b967b3f24126b29192b6606c22a13b`.
+Journal head: `sha256:f9661cc253ea800d895bfcd813a6f258e71c9419ab1cc3d5f8793c394c0ef915`.
+
+Next implement exactly Module 11 Iteration 2: deterministic risk rules and sizing with
+valid stop/position policies, kill switch, daily loss, exposure/correlation, stale-data,
+cooldown and liquidity checks. Preserve per-arm isolation and immutable candidate handoff.
+Do not implement Iteration 3 conflict attribution or Module 12 broker in that iteration.
+
+## Module 10, Iteration 3 deliverables (preserved prior handoff)
 
 Added grounded immutable explanations for observed claims, independent origins,
 contradictory/retracted evidence, event age, publication/receipt clocks, prior conditional
@@ -1556,17 +1735,14 @@ Checksums and explicit ms/us boundary verified; repeated actual DB import was id
 - Run: market-import-run_3cf9d640263374af24d035548e82b6b1d6d81d355d0d67b7b1601491fe2ede14.
 - Preserved 5,762-entry audit chain on repeat registration.
 
-## Limits and next assignment
+## Archived Module 03 limits and handoff (superseded)
 
 Captures support one mapped spot pair, at most 60 seconds and one public provider. Depth
 is bounded. Rights are undetermined; source/terms links do not grant a license. No quote
 implies a guaranteed fill or profitability. Integrity hashes do not authenticate providers.
 Stream API/daemon/SQL indexing, event studies, fees/risk/fill simulation and live news are later work.
 
-Implement exactly Module 04, Iteration 2: one permitted RSS/official adapter plus an optional
-aggregation adapter behind flags, with current source-specific license gates. Add bounded
-scheduling, first-observed/publication/update/availability latency capture, canonical URLs,
-duplicate/repost occurrence retention, minimal approved text, quotas, exponential retry and
-dead-letter behavior. Preserve separate source attribution and original first-seen evidence;
-syndicated repetition must not become independent confirmation. Read the master/Module 04
-first and stop before Iteration 3 review/corrections/export. No semantic event claims.
+The earlier Module 03 handoff requested Module 04 Iteration 2. That work and all later
+implementation iterations are now complete. The capture limits above describe that
+historical finite recorder. Current implementation status and remaining real-world
+validation are recorded at the top of this document.

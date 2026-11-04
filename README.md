@@ -1,10 +1,24 @@
 # Crypto Intelligence Research Platform
 
 Research-only crypto intelligence, built from the specifications in `project_roadmap/`.
-All future executions are simulated. Explicit CLI commands can capture public market data;
-there are no exchange accounts, order placement, withdrawals or performance claims.
+All executions are simulated. Explicit CLI commands can capture public market data;
+there are no exchange accounts, real order placement, withdrawals or established alpha claims.
 
-**Current boundary: Module 10 Iteration 3: explained adversarial news replay.**
+**Implementation: all roadmap modules and iterations through Module 16.**
+The full research/paper path includes immutable evaluation, an authenticated dashboard,
+pre-registered experiment controls and a detached optional entity prototype (DEFER).
+The thirty-day acceptance exercise is explicitly synthetic; a real elapsed forward
+study still requires eligible providers, unchanged frozen code and actual wall time.
+Start `pnpm dashboard` for the local research console. See [dashboard](docs/dashboard.md),
+[experiment runbook](docs/experiment.md), [frozen synthetic findings](docs/experiment-2026-11-03-findings.md)
+and [optional extension decision](docs/module16-decision.md).
+Risk gates, evidence-linked decisions and four persistent virtual portfolios now support
+conservative quote/trade fills, source health, controls and exact restart/replay.
+Try `pnpm paper start --feed synthetic --directory data/paper/my-day`;
+see [paper broker](docs/paper-broker.md).
+Four isolated candidate portfolios now share a frozen opportunity grid and common
+assumptions, with conservative versioned fusion policies and immutable audit reports.
+Try `pnpm fusion fixture`; see [fusion isolation](docs/fusion-isolation.md).
 News decisions now retain grounded explanations, source-safety cases and a frozen later
 comparison with cash/always-long markouts, including false positives and missed events.
 Try `pnpm news-audit fixture`; see [news replay and handoff](docs/news-audit.md).
@@ -24,7 +38,7 @@ Cash, buy-and-hold, SMA/EMA crossover, breakout and z-score reversion now produc
 candidates and costed synthetic reports. Try `pnpm backtest market-fixture` or
 `pnpm backtest market-matrix`; see [market baselines](docs/market-baselines.md).
 Symmetric long/short fixtures retain signals with execution disabled. Next is Module 11
-Iteration 1, Independent Strategy Isolation.
+Iteration 2, Risk Engine.
 News now supports immutable as-of event inputs, explained confidence/uncertainty, declared
 asset context, prospective split/merge lineage and offline provenance graphs. See
 `docs/news-events.md` for commands and handoff, `docs/news-independence.md` for source rules,
@@ -174,6 +188,10 @@ for startup and environment variables. Docker image tags are pinned; digests are
 
 ## Workspace and contributor rules
 
+For the real BTC hourly-history workflow, open `/market-test` in the local dashboard.
+It provides a six-month, 10,000-virtual-USDT market-only retrospective test with source
+inspection and hourly decision traces. See [the walkthrough](docs/btc-market-test.md).
+
 Implemented source boundaries:
 
 - `apps/api`: operational `buildApp` and explicit read-only `buildMarketQueryApp(data)`.
@@ -189,12 +207,13 @@ Implemented source boundaries:
 - `packages/news`: source registry, append-only article versions, point-in-time views and optional PostgreSQL registration.
 - `tests/fixtures`: synthetic inputs with no licensed articles or real market claims.
 
-The remaining directories from the master layout are reserved workspaces with READMEs,
-without runtime implementations or exports. The dashboard is deferred until backend gates.
-TypeScript source exports are development-only and run through `tsx`; a distributable
-JavaScript build is outside this iteration.
+`packages/strategies`, `risk`, `paper`, and `evaluation` implement isolated candidates,
+deterministic risk, virtual execution, uncertainty and frozen assessments. `apps/web`
+is a production-buildable Next.js research dashboard over the authenticated API.
+The optional prototype in `research_prototypes/` is excluded from production imports.
+TypeScript server/library source exports run through `tsx`; Next uses its own build.
 
-Read the master prompt and the active module before editing. Implement one iteration,
+Read the master prompt and the active module before editing. Validate each iteration,
 validate external inputs with Zod, keep paper-only and point-in-time constraints, add a
 meaningful failure-path test, update docs/ADRs and run `pnpm check`. Never commit `.env`,
 credentials, dependency folders, downloaded runtimes or data outputs. Do not rewrite the

@@ -11,3 +11,5 @@ export * from './news-edge.js';
 export * from './news-edge-artifact.js';
 export * from './news-explanation.js';
 export { deriveNewsFreshness } from './news-freshness.js';
+export * from './fusion.js';
+export { fusionFixture } from './fusion-fixture.js';

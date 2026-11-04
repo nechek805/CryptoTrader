@@ -1,5 +1,4 @@
 # @crypto/paper
 
-Isolated simulated portfolios and ledgers start in Module 12.
-
-Reserved workspace boundary; intentionally no runtime implementation or exports yet.
+Persistent simulated spot portfolios, canonical fills and balanced ledgers, conservative
+quote/trade execution, source health, controls and exact replay. See docs/paper-broker.md.

@@ -2,5 +2,17 @@
   "name": "@crypto/paper",
   "version": "0.1.0",
   "private": true,
-  "type": "module"
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@crypto/backtest": "workspace:*",
+    "@crypto/contracts": "workspace:*",
+    "@crypto/core": "workspace:*",
+    "@crypto/risk": "workspace:*",
+    "@crypto/connectors": "workspace:*",
+    "decimal.js": "10.6.0",
+    "zod": "4.6.7"
+  }
 }

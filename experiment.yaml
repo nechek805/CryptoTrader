@@ -1,0 +1,256 @@
+schemaVersion: experiment-protocol.v1
+execution: SIMULATED
+origin: SYNTHETIC
+name: synthetic-30-day-operational-exercise
+frozenAt: 2026-01-01T00:00:00.000000000Z
+codeVersion: working-tree:sha256:9b8d82de9327f6b9f80542e9a3fe0b2fd0ace9d6d98aa82586aebce3c598b2a2
+paper:
+  schemaVersion: paper-config.v1
+  runManifestHash: sha256:6332bf2b738d899125d23d9c28f4a024c733854569d379e27cf2a1dc3c909aba
+  riskPolicyHash: sha256:a57e53f3896ded83066897b3f684de2e9ebd32afc5220e90ff142f5242b4d5dc
+  codeVersion: working-tree:sha256:9b8d82de9327f6b9f80542e9a3fe0b2fd0ace9d6d98aa82586aebce3c598b2a2
+  origin: SYNTHETIC
+  startAt: 2026-01-01T00:00:00.000000000Z
+  endAt: 2026-01-31T00:00:00.000000000Z
+  initialCash: '10000'
+  quoteCurrency: USDT
+  instruments:
+    - symbol: BTC/USDT
+      base: BTC
+      quantityStep: '0.001'
+      minimumQuantity: '0.001'
+      tickSize: '0.01'
+      metadataHash: sha256:fff4e70466c6030c474cafc2fbf9a469c61387e6dec0b3093764a70a7b31f3b6
+      availableAt: 2026-01-01T00:00:00.000000000Z
+      validUntil: 2026-02-01T00:00:00.000000000Z
+    - symbol: ETH/USDT
+      base: ETH
+      quantityStep: '0.001'
+      minimumQuantity: '0.001'
+      tickSize: '0.01'
+      metadataHash: sha256:e7ac09f2fb53580646a351a243ec154e9740bdab8649e37a8dd3ab9893d7b6d4
+      availableAt: 2026-01-01T00:00:00.000000000Z
+      validUntil: 2026-02-01T00:00:00.000000000Z
+    - symbol: SOL/USDT
+      base: SOL
+      quantityStep: '0.001'
+      minimumQuantity: '0.001'
+      tickSize: '0.01'
+      metadataHash: sha256:ed88d73fd17b951ac93b8ae83791a88c331f58cf9c665de920633e93fa5a2e35
+      availableAt: 2026-01-01T00:00:00.000000000Z
+      validUntil: 2026-02-01T00:00:00.000000000Z
+  source:
+    id: synthetic:paper-feed
+    adapterVersion: synthetic-paper-feed.v1
+    licenseReviewHash: sha256:73e644639a9ad2978d6c5f444f1de870ed54767635638c412286acdfde691ac5
+    reviewedAt: 2026-01-01T00:00:00.000000000Z
+    validUntil: 2026-02-01T00:00:00.000000000Z
+    approved: true
+  latencyMs: 100
+  maxQuoteAgeSeconds: 120
+  maxClockSkewSeconds: 2
+  makerRate: '0.0005'
+  takerRate: '0.001'
+  slippageBps: '5'
+  participation: '0.25'
+  queueAheadQuantity: '1'
+  recordingPolicy: TRIAL_IDLE_120S_ACTIVE_100MS_RELEVANT_TRADES_V1
+  newsSources:
+    - id: synthetic:trial-news
+      licenseReviewHash: sha256:93861d303b6776fec3c1e6d7703455be94f9f94633b5d48d62d89841d731b72f
+      validUntil: 2026-02-01T00:00:00.000000000Z
+      heartbeatTtlSeconds: 3600
+riskPolicy:
+  schemaVersion: decision-policy.v1
+  risk:
+    schemaVersion: risk-config.v1
+    frozenAt: 2026-01-01T00:00:00.000000000Z
+    killSwitch: false
+    leverage: '1'
+    allowShort: false
+    riskFraction: '0.0025'
+    dailyLossFraction: '0.02'
+    maxGrossFraction: '0.5'
+    maxNetFraction: '0.5'
+    maxSymbolFraction: '0.1'
+    maxCorrelatedFraction: '0.2'
+    maxSpreadBps: '20'
+    minLiquidityNotional: '10000'
+    liquidityParticipation: '0.01'
+    gapAllowanceFraction: '0.01'
+    feeRate: '0.001'
+    maxFeedAgeSeconds: 30
+    maxAccountAgeSeconds: 30
+    cooldownSeconds: 60
+    maxValiditySeconds: 300
+    correlationGroups:
+      - symbol: BTC/USDT
+        group: crypto-major
+      - symbol: ETH/USDT
+        group: crypto-major
+  allowedRegimes:
+    - TREND
+    - RANGE
+  uncalibratedDiscount: '0.5'
+models:
+  - portfolio: BASELINE
+    strategyId: synthetic:BASELINE
+    artifact:
+      id: synthetic:model:BASELINE
+      version: synthetic-rule.v1
+      origin: SYNTHETIC
+      knownAt: 2026-01-01T00:00:00.000000000Z
+      trainingCutoff: null
+      content:
+        origin: SYNTHETIC
+        rule: CASH_HOLD
+        inputPolicy: NONE
+      hash: sha256:0120ca050b041f1118b98fe081c4f82f0df0a5e68c57e11addce72262335373b
+  - portfolio: NEWS_ONLY
+    strategyId: synthetic:NEWS_ONLY
+    artifact:
+      id: synthetic:model:NEWS_ONLY
+      version: synthetic-rule.v1
+      origin: SYNTHETIC
+      knownAt: 2026-01-01T00:00:00.000000000Z
+      trainingCutoff: null
+      content:
+        origin: SYNTHETIC
+        rule: SCRIPTED_ACCOUNTING_NOT_PREDICTIVE
+        inputPolicy: NEWS_ONLY
+      hash: sha256:fc5338bc3364f5daea7ccb445be973cd0778ccf093a3715bd8466326bfeee683
+  - portfolio: MARKET_ONLY
+    strategyId: synthetic:MARKET_ONLY
+    artifact:
+      id: synthetic:model:MARKET_ONLY
+      version: synthetic-rule.v1
+      origin: SYNTHETIC
+      knownAt: 2026-01-01T00:00:00.000000000Z
+      trainingCutoff: null
+      content:
+        origin: SYNTHETIC
+        rule: SCRIPTED_ACCOUNTING_NOT_PREDICTIVE
+        inputPolicy: MARKET_ONLY
+      hash: sha256:580e11065a7d966e53ac1351e342a33125dd3c807b81657e5a98ba3dd6b82e10
+  - portfolio: FUSION
+    strategyId: synthetic:FUSION
+    artifact:
+      id: synthetic:model:FUSION
+      version: synthetic-rule.v1
+      origin: SYNTHETIC
+      knownAt: 2026-01-01T00:00:00.000000000Z
+      trainingCutoff: null
+      content:
+        origin: SYNTHETIC
+        rule: SCRIPTED_ACCOUNTING_NOT_PREDICTIVE
+        inputPolicy: FROZEN_FUSION
+      hash: sha256:82817a713a4563f333a0210b404e730f1ac134e60e207a91c34baa2146157400
+providers:
+  - id: synthetic:paper-feed
+    kind: MARKET
+    adapterVersion: synthetic-paper-feed.v1
+    adapterHash: sha256:54d9b354b0609292236b3d732c486350e80fc1a704ddc049b53bd37ecb740c8d
+    reviewHash: sha256:73e644639a9ad2978d6c5f444f1de870ed54767635638c412286acdfde691ac5
+    reviewedAt: 2026-01-01T00:00:00.000000000Z
+    validUntil: 2026-02-01T00:00:00.000000000Z
+    approved: true
+    rights: LOCALLY_AUTHORED_SYNTHETIC
+    evidence:
+      id: synthetic:paper-feed/review
+      version: synthetic-review.v1
+      origin: SYNTHETIC
+      knownAt: 2026-01-01T00:00:00.000000000Z
+      trainingCutoff: null
+      content:
+        origin: SYNTHETIC
+        adapterHash: sha256:54d9b354b0609292236b3d732c486350e80fc1a704ddc049b53bd37ecb740c8d
+        licenseReviewHash: sha256:73e644639a9ad2978d6c5f444f1de870ed54767635638c412286acdfde691ac5
+        permission: Locally authored fictional acceptance data only
+      hash: sha256:fcff3d3f9a2ac667d4f2adca89c91a5b25e2d434dc763c06b98aeab14b53a818
+  - id: synthetic:trial-news
+    kind: NEWS
+    adapterVersion: synthetic-news-heartbeat.v1
+    adapterHash: sha256:25c3dc4a6354b4599f8b0d07203f5ad8698cc16e04c4e7ff36a5670019a35d0d
+    reviewHash: sha256:93861d303b6776fec3c1e6d7703455be94f9f94633b5d48d62d89841d731b72f
+    reviewedAt: 2026-01-01T00:00:00.000000000Z
+    validUntil: 2026-02-01T00:00:00.000000000Z
+    approved: true
+    rights: LOCALLY_AUTHORED_SYNTHETIC
+    evidence:
+      id: synthetic:trial-news/review
+      version: synthetic-review.v1
+      origin: SYNTHETIC
+      knownAt: 2026-01-01T00:00:00.000000000Z
+      trainingCutoff: null
+      content:
+        origin: SYNTHETIC
+        adapterHash: sha256:25c3dc4a6354b4599f8b0d07203f5ad8698cc16e04c4e7ff36a5670019a35d0d
+        licenseReviewHash: sha256:93861d303b6776fec3c1e6d7703455be94f9f94633b5d48d62d89841d731b72f
+        permission: Locally authored fictional acceptance data only
+      hash: sha256:dd8d0eff98e46b5768e648c08c087f074facf8ced7ebf12002c5c16455804a73
+evaluation:
+  schemaVersion: evaluation-plan.v1
+  frozenAt: 2026-01-01T00:00:00.000000000Z
+  generatedAt: 2026-01-31T00:00:01.000000000Z
+  randomSeed: 42
+  phase: FORWARD
+  trialRegistryHash: sha256:f2a65246ea3cafda51ba8488a3007b13ff6e0fb204bbe99f944ae216c50f292e
+  experimentCount: 1
+  hyperparameterTrials: 1
+  familySize: 3
+  opportunityGrid:
+    - at: 2026-01-01T00:01:01.000000000Z
+      symbol: BTC/USDT
+    - at: 2026-01-05T00:01:01.000000000Z
+      symbol: BTC/USDT
+    - at: 2026-01-11T00:01:01.000000000Z
+      symbol: BTC/USDT
+    - at: 2026-01-16T00:01:01.000000000Z
+      symbol: BTC/USDT
+  blockDays: 3
+  overlapHorizonDays: 1
+  minimumBlocks: 8
+  minimumClosedTrades: 30
+  resamples: 999
+  alpha: 0.05
+  maximumTailContribution: '0.5'
+  minimumCoverage: '0.95'
+  maximumDrawdown: '0.1'
+  minimumPairedDailyImprovement: '0'
+  primaryComparison: NEWS_ONLY_MINUS_MARKET_ONLY
+  marketObservationCadenceSeconds: 3600
+  scenarios:
+    - id: FEES_2X
+      feeMultiplier: '2'
+      slippageMultiplier: '1'
+      addedLatencyMs: 0
+    - id: IMPACT_2X
+      feeMultiplier: '1'
+      slippageMultiplier: '2'
+      addedLatencyMs: 0
+    - id: ENTRY_LAG
+      feeMultiplier: '1'
+      slippageMultiplier: '1'
+      addedLatencyMs: 59000
+newsPolicy:
+  independentOrigins: 2
+  dependenciesCountAsOne: true
+  confirmationClock: LATEST_REQUIRED_AVAILABLE_AT
+  delayedTreatment: HOLD_AT_SLOT_NEVER_BACKDATE
+  corrections: APPEND_NEW_KNOWLEDGE
+schedule:
+  heartbeatSeconds: 3600
+  sourceAuditSeconds: 3600
+  reconcile: UTC_DAILY
+  weeklyQaDays: 7
+  maxClockLagSeconds: 30
+failureCriteria:
+  minimumCoverage: '0.95'
+  knownLookAheadBugs: 0
+  duplicateLedgerBugs: 0
+  hardRiskBreaches: 0
+  stopOnIntegrityFailure: true
+baselinePolicy: CASH
+fillModel: OBSERVED_QUOTES_AND_TRADE_THROUGH_ASSUMED_QUEUE_V1
+spreadPolicy: OBSERVED_BID_ASK_NO_FIXED_SPREAD_INVENTION
+changePolicy: ANY_CODE_OR_PARAMETER_CHANGE_NEW_EXPERIMENT_ID
