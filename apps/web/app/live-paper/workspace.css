@@ -1,0 +1,138 @@
+.live-workspace {
+  display: grid;
+  gap: 24px;
+}
+.live-workspace .panel {
+  padding: 26px;
+  min-width: 0;
+}
+.live-workspace h2 {
+  font-size: 21px;
+  margin: 10px 0;
+}
+.live-workspace h3 {
+  margin: 0 0 12px;
+}
+.live-workspace p {
+  line-height: 1.7;
+}
+.live-run,
+.live-table-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 25px;
+  flex-wrap: wrap;
+}
+.live-controls {
+  display: grid;
+  gap: 12px;
+  max-width: 365px;
+}
+.live-controls small,
+.live-note,
+.live-feed small {
+  color: #657b80;
+  line-height: 1.65;
+}
+.live-venues {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+.live-venue strong {
+  font-size: 23px;
+}
+.live-venue p {
+  margin: 10px 0;
+}
+.live-venue small {
+  line-height: 1.65;
+}
+.live-feed {
+  display: grid;
+  gap: 7px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #dce4de;
+  overflow-wrap: anywhere;
+}
+.live-workspace .negative {
+  color: #ae3a39;
+}
+.live-workspace .positive {
+  color: #217864;
+}
+.live-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 20px;
+  align-items: end;
+}
+.live-workspace label {
+  display: grid;
+  gap: 7px;
+  font-size: 12px;
+  color: #426064;
+}
+.live-workspace input,
+.live-workspace select {
+  border: 1px solid #cfdad2;
+  border-radius: 5px;
+  min-height: 38px;
+  background: #fffefa;
+  color: #173b40;
+  padding: 7px 10px;
+  max-width: 260px;
+}
+.live-filters input[type='number'] {
+  width: 125px;
+}
+.live-export,
+.live-pages {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.live-pages {
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+.live-workspace .table-wrap {
+  overflow-x: auto;
+}
+.live-workspace table {
+  white-space: nowrap;
+  width: 100%;
+  font-size: 13px;
+}
+.live-workspace th,
+.live-workspace td {
+  padding: 14px 10px;
+  text-align: left;
+  border-bottom: 1px solid #e0e6e0;
+}
+.live-workspace td small {
+  font-size: 11px;
+  color: #74868a;
+}
+.live-detail pre {
+  max-height: 350px;
+  overflow: auto;
+  font-size: 12px;
+  background: #f1f4ee;
+  padding: 18px;
+}
+.live-workspace button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+@media (max-width: 700px) {
+  .live-workspace .panel {
+    padding: 16px;
+  }
+  .live-controls {
+    max-width: 100%;
+  }
+}

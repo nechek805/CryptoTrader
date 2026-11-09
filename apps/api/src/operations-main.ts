@@ -6,10 +6,22 @@ import { loadPaperStore, appendPaperEvent, enqueuePaperEvent } from '@crypto/pap
 import { verifyEvaluationBundle } from '@crypto/evaluation';
 import type { PaperEvent } from '@crypto/contracts';
 import { createBtcTestService } from './btc-test.js';
+import { createMarketStrategyService } from './market-strategy-tests.js';
+import { createSpecialistService } from './specialist-tests.js';
+import { createSpecialistV5Service } from './specialist-v5.js';
+import { createDirectionalService } from './directional-tests.js';
+import { createShortV6Service } from './short-v6.js';
+import { createLivePaperService } from './live-paper.js';
+import { createRemoteLivePaperService } from './remote-live-paper.js';
 
 async function main() {
   const fixture = (process.env.OPS_MODE ?? 'fixture') === 'fixture';
-  if (!fixture && process.env.OPS_MODE !== 'deployment') throw new Error('Invalid operations mode');
+  const hostedPaper = process.env.OPS_MODE === 'hosted-paper',
+    fixtureData = fixture || hostedPaper;
+  if (!fixtureData && process.env.OPS_MODE !== 'deployment')
+    throw new Error('Invalid operations mode');
+  if (hostedPaper && (!process.env.OPS_PROXY_SECRET || process.env.OPS_PROXY_SECRET.length < 32))
+    throw new Error('Hosted paper requires an authenticated reverse proxy');
   const reader = fixture ? 'fixture-read-0000000000000000000000' : process.env.OPS_READ_TOKEN,
     admin = fixture ? 'fixture-admin-000000000000000000000' : process.env.OPS_ADMIN_TOKEN;
   if (
@@ -21,7 +33,7 @@ async function main() {
   )
     throw new Error('Operations credentials required');
   const directory = process.env.OPS_PAPER_STORE;
-  const data = fixture
+  const data = fixtureData
     ? await operationsFixture()
     : directory
       ? {
@@ -33,7 +45,7 @@ async function main() {
           newsSnapshots: [],
         }
       : null;
-  if (!data || (fixture && data.paper.config.origin !== 'SYNTHETIC'))
+  if (!data || (fixtureData && data.paper.config.origin !== 'SYNTHETIC'))
     throw new Error('Operations dataset mode mismatch');
   const app = buildOperationsApp(
     data,
@@ -46,7 +58,7 @@ async function main() {
         ? ['http://127.0.0.1:3100', 'http://localhost:3100']
         : (process.env.OPS_ALLOWED_ORIGINS ?? '').split(',').filter(Boolean),
     },
-    directory && !fixture
+    directory && !fixtureData
       ? {
           refresh: async () => (await loadPaperStore(directory)).report(),
           control: async (event: PaperEvent) => {
@@ -61,18 +73,55 @@ async function main() {
             }
           },
         }
-      : fixture
-        ? { demoAutoLogin: true, btcTest: await createBtcTestService('data/btc-market-test') }
+      : fixtureData
+        ? {
+            ...(hostedPaper
+              ? { trustedProxy: { tokenHash: canonicalHash(process.env.OPS_PROXY_SECRET!) } }
+              : {}),
+            ...(process.env.LIVE_PAPER_ENABLED === '1'
+              ? {
+                  livePaper:
+                    process.env.LIVE_PAPER_SCHEDULER === 'bullmq'
+                      ? await createRemoteLivePaperService(
+                          process.env.LIVE_PAPER_DATABASE_URL ?? '',
+                          process.env.WORKER_RPC_URL ?? '',
+                          process.env.WORKER_RPC_TOKEN ?? '',
+                        )
+                      : await createLivePaperService(process.env.LIVE_PAPER_DATABASE_URL ?? ''),
+                }
+              : {}),
+            demoAutoLogin: fixture,
+            btcTest: await createBtcTestService('data/btc-market-test'),
+            marketTests: await createMarketStrategyService('data/market-strategy-tests'),
+            specialists: await createSpecialistService('data/sol-xrp-lab'),
+            specialistsV5: await createSpecialistV5Service('data/sol-xrp-v5'),
+            directionalTests: await createDirectionalService('data/directional-tests'),
+            shortV6: await createShortV6Service('data/short-v6'),
+          }
         : {},
+  );
+  app.get('/queue-status', async () =>
+    process.env.LIVE_PAPER_SCHEDULER === 'bullmq'
+      ? fetch((process.env.WORKER_RPC_URL ?? '') + '/queue-status', {
+          headers: { 'x-crypto-worker-auth': process.env.WORKER_RPC_TOKEN ?? '' },
+          signal: AbortSignal.timeout(5000),
+        }).then(async (response) => {
+          if (!response.ok) throw new Error('Queue unavailable');
+          return response.json();
+        })
+      : { enabled: false, backend: 'LOCAL_TIMER' },
   );
   const stop = () => {
     void app.close();
   };
   process.once('SIGINT', stop);
   process.once('SIGTERM', stop);
-  await app.listen({ host: '127.0.0.1', port: 3101 });
+  const bindHost = process.env.OPS_BIND_HOST ?? '127.0.0.1';
+  if (!['127.0.0.1', '0.0.0.0'].includes(bindHost) || (!hostedPaper && bindHost !== '127.0.0.1'))
+    throw new Error('Invalid operations bind address');
+  await app.listen({ host: bindHost, port: 3101 });
   process.stdout.write(
-    `Research API ready at http://127.0.0.1:3101 — ${fixture ? 'synthetic local workspace' : 'authenticated deployment gateway'}\n`,
+    `Research API ready at http://127.0.0.1:3101 — ${hostedPaper ? 'authenticated hosted paper trading' : fixture ? 'synthetic local workspace' : 'authenticated deployment gateway'}\n`,
   );
 }
 main().catch(() => {

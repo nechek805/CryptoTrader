@@ -5,6 +5,24 @@ All executions are simulated. Explicit CLI commands can capture public market da
 there are no exchange accounts, real order placement, withdrawals or established alpha claims.
 
 **Implementation: all roadmap modules and iterations through Module 16.**
+
+[Historical news strategy research](docs/news-strategy-tests.md) adds a six-month,
+all-token LONG/SHORT study at `/news-strategy-tests`, with bounded fitting, fees,
+source coverage and explicit historical-availability gates. V3 adds structured
+event gates, stronger evidence requirements and walk-forward comparisons while
+preserving the frozen V1/V2 results; minute diagnostics remain separate.
+
+[News V4](docs/news-strategy-v4.md) connects free public announcement/incident and
+government archives, adds a 36-month common comparison for V1–V4, and preserves
+all original reports. No extra API keys or live news execution are introduced.
+
+[Live news collection](docs/live-news-engine.md) adds scheduled RSS/Atom feeds,
+source management, immutable article revisions and replaceable AI analysis at
+`/news-engine`. Provider credentials stay private; the market paper run remains separate.
+
+Production services use [Docker Compose and BullMQ](docs/compose-deployment.md):
+API, web, separate paper worker, Redis, PostgreSQL, gateway and queued backups.
+The owner's HTTPS domain and paper-run database are preserved.
 The full research/paper path includes immutable evaluation, an authenticated dashboard,
 pre-registered experiment controls and a detached optional entity prototype (DEFER).
 The thirty-day acceptance exercise is explicitly synthetic; a real elapsed forward
@@ -89,14 +107,13 @@ three-symbol synthetic inventory, runs the finite fixture worker and serves
 network access or provider credentials. Initial dependency installation requires a registry;
 all subsequent tests and fixture runs work offline with installed dependencies.
 
-On this Windows workstation a checksum-verified portable Node was installed in the ignored
-`.tools/node-v24.22.2-win-x64/` directory. To use it in the current PowerShell session:
-
-```powershell
-$env:PATH = "$PWD\.tools\tooling\node_modules\.bin;$PWD\.tools\node-v24.22.2-win-x64;$env:PATH"
-pnpm install --frozen-lockfile
-pnpm dev
-```
+pnpm selects the pinned Node version automatically through `useNodeVersion` in
+`pnpm-workspace.yaml`, downloading and caching it on first use if necessary.
+The Windows dashboard can use the checksum-verified portable installation in the ignored
+`.tools/node-v24.22.2-win-x64/` directory. Set
+`NODE_RUNTIME_DIR=.tools/node-v24.22.2-win-x64` in `.env` once, then run
+`pnpm dashboard` without setting PATH. Use `pnpm dashboard --check` to verify the selected
+runtime. A relative directory remains valid if the project folder moves.
 
 If pnpm is not installed globally, replace `pnpm` with
 `npm exec --yes --package=pnpm@10.34.9 -- pnpm` in those commands.
@@ -224,3 +241,17 @@ See `docs/contracts.md` for domain/time semantics, `docs/persistence.md` for dat
 `docs/market-import.md` for the importer, `docs/market-streams.md` for capture/replay,
 `docs/market-quality.md` for universe/quality queries, `docs/adr/` for decisions and
 `docs/news-registry.md` for news registry/parsing, and `docs/progress.md` for the handoff.
+
+# Live paper trading
+
+VPS hosting is available at <https://crypto-trader.nechek805.org/live-paper>, with
+a separate operator login and persistent server processes. See
+[VPS operations](docs/vps-deployment.md) for status, backups and recovery.
+
+Start `pnpm dashboard`, then open <http://127.0.0.1:3100/live-paper>. The new
+workspace runs SOL/XRP V6 against real public feeds from five exchanges, with
+10,000 virtual USDT per exchange, persistent positions, a 24-hour deadline,
+live profit inspection and filtered exports. No real exchange orders are sent.
+See [the live paper guide](docs/live-paper-trading.md) for persistent `.env`
+configuration, controls, recovery and recorded-input verification. Existing
+historical strategy pages remain available.

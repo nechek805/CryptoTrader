@@ -1,0 +1,38 @@
+.directional-tests .directional-matrix {
+  width: 100%;
+  min-width: 1250px;
+  table-layout: fixed;
+}
+.directional-matrix th:first-child {
+  width: 100px;
+}
+.directional-matrix td,
+.directional-matrix th {
+  padding: 16px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+.directional-tests table small {
+  display: block;
+  color: #607273;
+  line-height: 1.8;
+  font-size: 11px;
+  font-weight: 400;
+}
+.directional-tests progress {
+  width: min(100%, 420px);
+  margin-left: 16px;
+}
+.directional-tests .strategy-result span {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.short-v6-tests .short-v6-matrix {
+  min-width: 1450px;
+}
+.short-v6-tests .panel {
+  margin-bottom: 20px;
+}
+.short-v6-tests .specialist-selected {
+  background: #e6efe1;
+}

@@ -9,6 +9,14 @@
     "pnpm": "10.34.9"
   },
   "scripts": {
+    "queue:worker": "node --env-file-if-exists=.env --import tsx apps/api/src/queue-main.ts",
+    "queue:maintenance": "node --env-file-if-exists=.env --import tsx apps/api/src/maintenance-main.ts",
+    "live-paper": "node --env-file-if-exists=.env --import tsx apps/cli/src/live-paper.ts",
+    "short-v6": "node --env-file-if-exists=.env --import tsx apps/cli/src/short-v6.ts",
+    "directional-tests": "node --env-file-if-exists=.env --import tsx apps/cli/src/directional-tests.ts",
+    "specialist-v5": "node --env-file-if-exists=.env --import tsx apps/cli/src/specialist-v5.ts",
+    "specialist-tests": "node --env-file-if-exists=.env --import tsx apps/cli/src/specialist-tests.ts",
+    "market-tests": "node --env-file-if-exists=.env --import tsx apps/cli/src/market-strategy-tests.ts",
     "btc-test": "node --env-file-if-exists=.env --import tsx apps/cli/src/btc-test.ts",
     "dev": "node --env-file-if-exists=.env --import tsx apps/api/src/main.ts",
     "doctor": "node --env-file-if-exists=.env --import tsx apps/cli/src/main.ts doctor",
@@ -30,7 +38,7 @@
     "evaluation": "node --env-file-if-exists=.env --import tsx apps/cli/src/evaluation.ts",
     "experiment": "node --env-file-if-exists=.env --import tsx apps/cli/src/experiment.ts",
     "prototype:entities": "node --import tsx research_prototypes/source-entities/run.ts",
-    "dashboard": "node --env-file-if-exists=.env --import tsx apps/cli/src/dashboard.ts",
+    "dashboard": "node apps/cli/start-dashboard.mjs",
     "dashboard:api": "node --env-file-if-exists=.env --import tsx apps/api/src/operations-main.ts",
     "web:build": "pnpm --filter @crypto/web build",
     "db:migrate": "node --env-file-if-exists=.env --import tsx apps/cli/src/database.ts migrate",

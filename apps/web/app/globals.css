@@ -238,6 +238,7 @@ button:disabled {
 }
 .sidebar {
   width: 222px;
+  overflow-y: auto;
   background: #172c2b;
   color: #d0dcd5;
   position: fixed;

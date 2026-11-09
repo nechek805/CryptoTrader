@@ -1,5 +1,11 @@
 # BTC market-only historical test
 
+For the three-version comparison and candle-quality revision, see
+[BTC v3 results and limitations](btc-strategy-v3-2026-11-04.md).
+
+The original now has a separately versioned trend/cost-filter revision and dashboard
+comparison. See [the trade diagnosis and comparison](btc-strategy-revision-2026-11-04.md).
+
 Start the dashboard with the pinned local runtime (`pnpm dashboard`), then open
 <http://127.0.0.1:3100/market-test> or select **BTC market test** in the sidebar.
 This local research page opens without a token prompt. It uses public market data and

@@ -1,0 +1,29 @@
+[Unit]
+Description=Crypto Trader production Next.js dashboard
+After=network-online.target crypto-trader-api.service
+Wants=network-online.target crypto-trader-api.service
+
+[Service]
+Type=simple
+User=crypto-trader
+Group=crypto-trader
+WorkingDirectory=/opt/crypto-trader/current/apps/web
+Environment=NODE_ENV=production
+Environment=NEXT_TELEMETRY_DISABLED=1
+ExecStart=/opt/crypto-trader/runtime/node-v24.22.2-linux-x64/bin/node --max-old-space-size=256 /opt/crypto-trader/current/apps/web/node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3100
+Restart=always
+RestartSec=10
+TimeoutStopSec=30
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/crypto-trader/current/apps/web/.next/cache
+MemoryHigh=300M
+MemoryMax=450M
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

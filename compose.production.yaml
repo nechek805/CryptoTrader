@@ -1,0 +1,306 @@
+name: crypto-trader
+x-app: &app
+  image: ${APP_IMAGE:-crypto-trader:compose-v1}
+  build:
+    context: .
+    dockerfile: infra/compose/Dockerfile
+  user: ${APP_UID:-999}:${APP_GID:-998}
+  restart: unless-stopped
+  read_only: true
+  security_opt: [no-new-privileges:true]
+  cap_drop: [ALL]
+  tmpfs: ['/tmp:size=128m,mode=1777']
+  stop_grace_period: 45s
+  logging:
+    driver: json-file
+    options: { max-size: 10m, max-file: '3' }
+
+services:
+  postgres:
+    image: ${POSTGRES_IMAGE:-postgres:17-alpine}
+    container_name: crypto-trader-postgres
+    env_file: ['${CONFIG_DIRECTORY:-/etc/crypto-trader/compose}/db.env']
+    command:
+      [
+        postgres,
+        -c,
+        shared_buffers=32MB,
+        -c,
+        max_connections=30,
+        -c,
+        work_mem=2MB,
+        -c,
+        timezone=UTC,
+      ]
+    volumes: [postgres_data:/var/lib/postgresql/data]
+    networks: [private]
+    restart: unless-stopped
+    mem_limit: 192m
+    memswap_limit: 384m
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -h 127.0.0.1 -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    logging:
+      driver: json-file
+      options: { max-size: 10m, max-file: '3' }
+  redis:
+    image: redis:7-alpine
+    command: [redis-server, /usr/local/etc/redis/redis.conf]
+    env_file: ['${CONFIG_DIRECTORY:-/etc/crypto-trader/compose}/redis.env']
+    volumes:
+      - redis_data:/data
+      - ${CONFIG_DIRECTORY:-/etc/crypto-trader/compose}/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    networks: [private]
+    restart: unless-stopped
+    mem_limit: 192m
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    logging:
+      driver: json-file
+      options: { max-size: 10m, max-file: '3' }
+  worker:
+    <<: *app
+    image: ${WORKER_IMAGE:-crypto-trader:paper-worker-v1}
+    build:
+      context: .
+      dockerfile: infra/compose/worker.Dockerfile
+      args: { APP_BASE: '${APP_IMAGE:-crypto-trader:compose-v1}' }
+    env_file: ['${CONFIG_DIRECTORY:-/etc/crypto-trader/compose}/worker.env']
+    command: [node, --max-old-space-size=256, --import, tsx, apps/api/src/queue-main.ts]
+    volumes: ['${DATA_DIRECTORY:-/var/lib/crypto-trader/data}:/app/data']
+    networks: [private, egress]
+    mem_limit: 450m
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    healthcheck:
+      test: [CMD, node, infra/compose/healthcheck.mjs, worker]
+      interval: 10s
+      timeout: 8s
+      start_period: 45s
+      retries: 6
+  api:
+    <<: *app
+    env_file: ['${CONFIG_DIRECTORY:-/etc/crypto-trader/compose}/api.env']
+    command: [node, --max-old-space-size=512, --import, tsx, apps/api/src/operations-main.ts]
+    volumes: ['${DATA_DIRECTORY:-/var/lib/crypto-trader/data}:/app/data']
+    networks: [private, egress]
+    mem_limit: 800m
+    healthcheck:
+      test: [CMD, node, infra/compose/healthcheck.mjs, api]
+      interval: 15s
+      timeout: 5s
+      start_period: 300s
+      retries: 6
+  web:
+    <<: *app
+    image: ${WEB_IMAGE:-${APP_IMAGE:-crypto-trader:compose-v1}}
+    command: []
+    working_dir: /app
+    environment: { PORT: '3100' }
+    entrypoint:
+      [
+        /bin/sh,
+        -c,
+        'cd /app/apps/web && exec node --max-old-space-size=256 node_modules/next/dist/bin/next start --hostname 0.0.0.0 --port 3100',
+      ]
+    mem_limit: 350m
+    tmpfs: ['/tmp:size=64m,mode=1777', '/app/apps/web/.next/cache:size=64m,mode=1777']
+    networks: [private]
+    healthcheck:
+      test: [CMD, node, infra/compose/healthcheck.mjs, web]
+      interval: 15s
+      timeout: 5s
+      start_period: 30s
+      retries: 6
+  gateway:
+    image: nginx:stable-alpine
+    user: ${APP_UID:-999}:${APP_GID:-998}
+    entrypoint: [nginx, -g, 'daemon off;']
+    ports: ['127.0.0.1:3110:8080']
+    volumes:
+      - ${CONFIG_DIRECTORY:-/etc/crypto-trader/compose}/gateway.conf:/etc/nginx/nginx.conf:ro
+      - ${CONFIG_DIRECTORY:-/etc/crypto-trader/compose}/gateway.htpasswd:/etc/nginx/crypto.htpasswd:ro
+    networks: [private, egress]
+    restart: unless-stopped
+    read_only: true
+    tmpfs: ['/tmp:size=32m,mode=1777']
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 64m
+    depends_on:
+      api: { condition: service_healthy }
+      web: { condition: service_healthy }
+    healthcheck:
+      test: [CMD-SHELL, 'wget -q -O /dev/null http://127.0.0.1:8080/gateway-health']
+      interval: 15s
+      timeout: 5s
+      retries: 6
+    logging:
+      driver: json-file
+      options: { max-size: 10m, max-file: '3' }
+  maintenance:
+    <<: *app
+    profiles: [backups]
+    restart: 'no'
+    image: ${MAINTENANCE_IMAGE:-${APP_IMAGE:-crypto-trader:compose-v1}}
+    env_file: ['${CONFIG_DIRECTORY:-/etc/crypto-trader/compose}/maintenance.env']
+    entrypoint: [/bin/sh, -c]
+    command:
+      - 'if [ "$${BACKUPS_ENABLED:-0}" != "1" ]; then echo "Database backups disabled"; exit 0; fi; exec node --max-old-space-size=128 --import tsx apps/api/src/maintenance-main.ts'
+    environment:
+      BACKUP_DIRECTORY: /backups
+      BACKUPS_ENABLED: ${BACKUPS_ENABLED:-0}
+    volumes: ['${BACKUP_DIRECTORY:-/var/backups/crypto-trader/compose}:/backups']
+    networks: [private]
+    mem_limit: 256m
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+
+  telegram:
+    <<: *app
+    image: ${TELEGRAM_IMAGE:-crypto-trader:telegram-v1}
+    build:
+      context: .
+      dockerfile: infra/compose/telegram.Dockerfile
+      args: { APP_BASE: '${WORKER_IMAGE:-crypto-trader:paper-worker-v1}' }
+    env_file: ['${CONFIG_DIRECTORY:-/etc/crypto-trader/compose}/telegram/.env']
+    command: [node, --max-old-space-size=128, --import, tsx, apps/api/src/telegram-main.ts]
+    networks: [private, egress]
+    mem_limit: 192m
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    healthcheck:
+      test: [CMD, node, infra/compose/healthcheck.mjs, telegram]
+      interval: 15s
+      timeout: 5s
+      start_period: 45s
+      retries: 6
+
+  news-forward:
+    <<: *app
+    image: ${NEWS_FORWARD_IMAGE:-crypto-trader:news-forward-v1}
+    build:
+      context: .
+      dockerfile: infra/compose/news-forward.Dockerfile
+      args: { APP_BASE: '${NEWS_IMAGE:-crypto-trader:news-v6}' }
+    command: [node, --max-old-space-size=256, --import, tsx, apps/api/src/news-forward-main.ts]
+    env_file: ['${CONFIG_DIRECTORY:-/etc/crypto-trader/compose}/news-forward/.env']
+    networks: [private, egress]
+    mem_limit: 320m
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    healthcheck:
+      test: [CMD, node, infra/compose/healthcheck.mjs, news-forward]
+      interval: 15s
+      timeout: 5s
+      start_period: 60s
+      retries: 6
+
+  news-forward-alerts:
+    <<: *app
+    image: ${NEWS_FORWARD_IMAGE:-crypto-trader:news-forward-v1}
+    command:
+      [node, --max-old-space-size=128, --import, tsx, apps/api/src/news-forward-alerts-main.ts]
+    env_file: ['${CONFIG_DIRECTORY:-/etc/crypto-trader/compose}/news-forward-alerts/.env']
+    networks: [private, egress]
+    mem_limit: 192m
+    depends_on:
+      news-forward: { condition: service_healthy }
+    healthcheck:
+      test: [CMD, node, infra/compose/healthcheck.mjs, news-forward-alerts]
+      interval: 15s
+      timeout: 5s
+      start_period: 45s
+      retries: 6
+
+  news-api:
+    <<: *app
+    image: ${NEWS_IMAGE:-crypto-trader:news-v1}
+    build:
+      context: .
+      dockerfile: infra/compose/news.Dockerfile
+      args: { APP_BASE: '${APP_IMAGE:-crypto-trader:compose-v1}' }
+    command: [node, --max-old-space-size=128, --import, tsx, apps/api/src/news-main.ts]
+    env_file: ['${CONFIG_DIRECTORY:-/etc/crypto-trader/compose}/news-api.env']
+    networks: [private]
+    mem_limit: 256m
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    healthcheck:
+      test: [CMD, node, infra/compose/healthcheck.mjs, news-api]
+      interval: 15s
+      timeout: 8s
+      start_period: 45s
+      retries: 6
+  news-collector:
+    <<: *app
+    image: ${NEWS_IMAGE:-crypto-trader:news-v1}
+    command: [node, --max-old-space-size=128, --import, tsx, apps/api/src/news-worker-main.ts]
+    env_file: ['${CONFIG_DIRECTORY:-/etc/crypto-trader/compose}/news-collector.env']
+    networks: [private, egress]
+    mem_limit: 256m
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    healthcheck:
+      test: [CMD, node, infra/compose/healthcheck.mjs, news-collector]
+      interval: 15s
+      timeout: 8s
+      start_period: 60s
+      retries: 6
+  news-research:
+    <<: *app
+    image: ${NEWS_IMAGE:-crypto-trader:news-v1}
+    command: [node, --max-old-space-size=384, --import, tsx, apps/api/src/news-research-main.ts]
+    env_file: ['${CONFIG_DIRECTORY:-/etc/crypto-trader/compose}/news-collector.env']
+    environment: { NEWS_RESEARCH_DIRECTORY: /news-research }
+    volumes: ['${NEWS_RESEARCH_DIRECTORY:-/var/lib/crypto-trader/news-research}:/news-research']
+    networks: [private, egress]
+    mem_limit: 512m
+    stop_grace_period: 300s
+    depends_on:
+      news-api: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    healthcheck:
+      test: [CMD, node, infra/compose/healthcheck.mjs, news-research]
+      interval: 15s
+      timeout: 8s
+      start_period: 60s
+      retries: 6
+
+  news-analyzer:
+    <<: *app
+    image: ${NEWS_IMAGE:-crypto-trader:news-v1}
+    command: [node, --max-old-space-size=128, --import, tsx, apps/api/src/news-worker-main.ts]
+    env_file: ['${CONFIG_DIRECTORY:-/etc/crypto-trader/compose}/news-analyzer.env']
+    networks: [private, egress]
+    mem_limit: 256m
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    healthcheck:
+      test: [CMD, node, infra/compose/healthcheck.mjs, news-analyzer]
+      interval: 15s
+      timeout: 8s
+      start_period: 60s
+      retries: 6
+
+networks:
+  private: { internal: true }
+  egress: {}
+volumes:
+  postgres_data:
+    external: true
+    name: ${POSTGRES_VOLUME:-crypto-trader-pgdata}
+  redis_data:
+    name: ${REDIS_VOLUME:-crypto-trader-queue-data}

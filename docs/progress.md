@@ -1,8 +1,629 @@
 # Implementation progress
 
-Updated: 2026-11-03 (Europe/Moscow)
+Updated: 2026-11-09 (Europe/Moscow)
 
 ## Current boundary
+
+News-driven live paper trading is implemented and deployed at `/news-paper`.
+Run `110a004d-11a3-4367-b16f-85757c0ee574` started on 2026-11-09 at 00:29:16 Moscow,
+with the original deadline 2026-11-10 00:29:16 Moscow. Five separate 10,000-USDT
+venue accounts share the ten-token universe, with fees and simulated borrowing on.
+All 50 public instrument checks passed. The frozen V6 report/model selections are
+preserved; BTC remains cash. Only new, fresh, permitted post-start news can open a
+candidate, after causal processing latency and a fresh public book. This is an
+exploratory forward paper experiment; historical qualification remains false.
+
+The separate BullMQ service has a fenced PostgreSQL writer, immutable evidence,
+hashed event chain, restart-safe state/command receipts, daily risk limits and
+paper-run controls. The dashboard includes rule explanations, filters, exports
+and position evidence. A separate outbound Telegram notifier watches this ledger;
+the existing market bot remains the sole command poller. All settings are in
+private `.env` files. Source permissions are rechecked before pending entries fill.
+
+Full check passed 1,213 tests in 73 files, including 11 new engine/API tests.
+Twelve real PostgreSQL/Redis integration tests passed, including six new forward
+ledger/control/alert tests; doctor and the production Next build passed. Four
+filtered export formats and rejected cross-origin control passed on production.
+Original market, news collector/analyzer/research and primary Telegram service
+identities, frozen engines, source settings and historical reports are unchanged.
+Backups remain disabled and absent. See [live news paper protocol](news-forward-paper.md)
+and ADR 0068. Production restart preserved the run ID, balances, engine/profile
+hashes and deadline. Its persisted event hash chain verifies, all 50 instrument
+checks and fresh ETH books on all five venues passed, and the news Telegram
+notifier is healthy with read-only ledger access. At final verification no new
+eligible article versions or positions existed; every account remained in cash.
+
+## Previous boundary: Telegram alerts
+
+Telegram paper-position alerts are implemented as a separate Compose service with
+an owner-only private-chat allowlist, `.env` credentials, read-only financial-ledger
+access, transactional notification cursors/outbox, and an independent BullMQ queue.
+It reports new opening fills and completed closes; read-only commands show current
+run status and open positions. Initial installation skips past events. See
+`docs/telegram-notifications.md` and ADR 0067 for retry and delivery limits.
+Deployed and healthy on production. Telegram acknowledged the private connection
+message, and restarting only the notifier preserved cursors and sent no duplicate
+welcome. `pnpm check` passed all 1,202 tests in 71 files, including seven new unit
+tests; all six isolated PostgreSQL/Redis integration tests and doctor also passed.
+Actual production grants confirm SELECT-only
+access to financial tables and no database CREATE permission. Financial/news source
+hashes, existing service start times and the completed V6 report are unchanged.
+Backups remain disabled and absent.
+
+## Previous boundary: backups disabled
+
+Server backups were disabled and removed at the user's request on 2026-11-08.
+Removed 28 project backup/archive and configuration-copy files (124,691,124 bytes).
+The maintenance container is removed, its BullMQ queue is paused with zero
+schedulers or pending jobs, and the old host timer is disabled. Production
+configuration persists `BACKUPS_ENABLED=0`; the optional Compose `backups`
+profile and explicit startup guard prevent normal restarts from enabling it.
+The host backup script also defaults to disabled. Future deployments must not
+create server-side backups or `.before` copies unless the user changes this policy.
+Live databases, research history and paper/news services are preserved. Compose
+validation, disabled backup startup, doctor and dashboard API checks passed.
+
+## Previous boundary: news V6
+
+Current addition: **news V6**, based on exact V2 reproduction with separate Fed
+categories and three independent single-factor tests. V1-V5, the frozen corpus,
+market chunks and fees are preserved. New versioned storage/queue/API and the
+six-version/ablation dashboard are implemented and deployed. Completed run
+`7764c794-c23f-4e64-9c17-09fd4f0b8c3d` reproduces the original V2 model exactly
+for all ten tokens before applying the independent changes. It reuses 179 V2
+events and all 60 frozen market chunks without downloads.
+
+V6 final net USDT: ADA +277.59, AVAX +253.41, BNB +173.78, ETH +161.56,
+LINK +97.77, SOL +85.48, DOGE +6.86, XRP -28.05, TRX -81.46; BTC holds cash.
+Six tokens retain unchanged V2. Category validation is selected for BNB, ETH
+and TRX. BTC's concentration-adjusted validation score fails; its profitable
+V2 final result does not override that decision. Each token has independent
+10,000-USDT capital with fees on. Negative and rejected cases remain visible.
+
+Report hash:
+`sha256:37e3e39695ca1075d094aea659a927ae50d084dfdc00f322ef7d59bf617c345b`.
+Engine hash:
+`sha256:39bca38dfdb19cbffe25202a06eed427dc072f920bdad2d296219f7e1eb52f2d`.
+Full check passed 1,195 tests in 70 files on Node 24.22.2. Doctor, production
+builds and 26 real PostgreSQL/Redis integration tests passed. Production models
+match local models exactly. Parent projection, old reports/source settings,
+fee/account reconciliation, all-case JSON/CSV/Markdown exports (3,584 CSV
+positions), idempotency and served UI bundle passed. A fresh backup restored
+six reports, two corpora and all 46 source configurations in a scratch database.
+Financial engines/container identities and existing collectors/analyzers remain
+unchanged. Validation slices are explicitly in-sample diagnostics, not forward
+tests, because configurations/gates were selected using the whole validation period.
+See [V6 protocol](news-strategy-v6.md) and [ADR 0066](adr/0066-v2-single-factor-news-v6.md).
+
+## Previous boundary: news V5
+
+Current addition: **news V5**, a separate event-category reaction experiment
+for all ten tokens, preserving V1–V4 and the exact frozen V4 history with fees on.
+V2 trade attribution, costed category validation, immutable parent/chunk checks,
+versioned BullMQ/API persistence and dashboard comparison are implemented.
+Deployed and completed run `a91716ee-8374-4ef3-a10c-e69357143b05` on 2026-11-08.
+The exact V4 corpus and 60 candle chunks were reused without downloads; 115
+canonical V5 events were admitted. Seven tokens trade; BTC, ETH and TRX abstain.
+V5 final P&L: AVAX +118.01, ADA +117.13, BNB +38.72, DOGE +6.86, XRP -25.99,
+LINK -36.10, SOL -180.09 USDT. V5 does not improve V2 overall; negative results
+are retained. Each token has separate 10,000-USDT capital and fees stay on.
+
+Report hash:
+`sha256:bb09ca42bbd12dd7f95f16e5d7cb8e10ed6b062730f252464486afcadbd64cb2`.
+Engine hash:
+`sha256:131542d051190629e51ddae023c602a750809835c7763b9af5c97678659ba606`.
+Full check passed 1,186 tests in 69 files; 23 real PostgreSQL/Redis integration
+tests, doctor and production builds passed. Production accounts reconcile and
+all V5 model objects match the local replay exactly. Original reports, V1–V4
+models, candle/corpus hashes and all 46 source settings are preserved. JSON,
+CSV and Markdown exports, idempotent starts and the served V5 UI bundle passed.
+A fresh backup restored five reports, two V4 corpora and 46 source configurations
+in an isolated scratch database. Financial container identities/source bytes
+and existing collector/analyzer images remain unchanged.
+See [V5 protocol](news-strategy-v5.md) and [ADR 0065](adr/0065-costed-release-group-news-v5.md).
+
+## Previous boundary: news V4
+
+Current addition: free public archive adapters and **news V4**. The 36-month
+24/6/6 study reruns all four versions on common data for ten tokens plus USDT;
+original six-month reports and legacy engine bytes remain preserved. Nine new
+sources bring the directory to 46. Versioned seed/corpus/report persistence,
+BullMQ V4 routing and dashboard comparison/coverage/trade views are implemented.
+Initial real-data research retains negative outcomes and V4 abstention; no final
+period tuning or forced trades.
+
+Deployed and completed run `57fb2088-801c-40d7-97fb-8877c79fc08c` on 2026-11-08.
+All ten tokens have 26,304 verified hourly candles; the corpus contains 2,504
+records and 79 eligible V4 events. Eight new collectors are healthy; GDELT's
+current network failure and limited historical discovery are visible. Bybit
+scanned 9,111 items and retained 377 current-universe records, 278 dated; archives
+include 35 CPI releases, 30 dated jobs releases, 25 Fed statements and 82 XRPL
+amendment changes. SEC date-only records remain excluded from trading.
+
+V4 final accounts stayed in cash. ETH/ADA pass a training gate but yield only four
+validation trades versus the required five. Other candidates lack sample/edge
+support. Common-history V2 final P&L ranges from TRX -284.88 to ADA +277.59 USDT;
+AVAX +253.41 and ETH +161.56. No model is live-qualified. These are new final
+six-month results, not replacements for the old two-month evaluation.
+
+V4 report hash:
+`sha256:3fa77b06e434fda0ad1d94c3360acd592d7988a848488b6fca7badcb164f2530`.
+Engine hash:
+`sha256:fe420e11d8c194f4c988d4ca1cb84c58d791dad55d918a3f97bd43f4538736b7`.
+Full check passed 1,179 tests in 68 files; 20 real PostgreSQL/Redis integration
+tests, production build and doctor passed. A final shared-issuer metadata fix
+unified Fed/SEC archives with their original feeds. Exact exchange pair symbols
+such as BTCUSDT are mapped separately without altering publisher quotes. Forty
+focused regressions, a full repeated check and repeated integration tests passed
+after the corrections. The compatible news-v4.2 image contains them. Existing
+37 source configurations were unchanged; only two
+new source revisions record the corrected groups before the V4 request froze.
+
+The initial V4 run `b98e08fa-30c1-41be-86de-67a8cc3fa13c` and its report hash
+`sha256:dfadaa5978a2bc071d64b40e872e45dfb5fe32d709ca4852e8a4d3dca4ad12fb`
+remain immutable and selectable. The symbol mapping correction added 13 retained
+records and changed no evidence threshold, fee assumption or final-period result.
+
+Production verification passed account reconciliation, prior-release time ordering,
+macro deduplication, common markets/costs, old-report preservation, exports, served
+UI bundle, authorization and idempotent starts. V4 survived a research-worker
+restart. A new backup restored all three report hashes, V4 corpus and 46 sources
+into a scratch database, which was removed. Financial and V1–V3 source hashes,
+financial container identities and roadmap checksums were preserved. The live
+paper run remains RUNNING without an API/worker error.
+See [V4 protocol](news-strategy-v4.md) and [ADR 0064](adr/0064-free-archives-and-news-v4.md).
+
+Previous addition: structured **news strategy V3** for all ten market tokens,
+preserving V1/V2 and the exact six-month baseline with fees on. Separate immutable
+V3 requests/reports, status-aware evidence, pre-release macro forecast gates,
+12/20-sample uncertainty/cost gates, 72-hour purging and three walk-forward folds
+are implemented. The dashboard adds side-by-side results, HOLD reasons, original
+headline opinions and separate real one-minute reaction diagnostics. Initial
+local real-data comparison: all V3 accounts stayed at 10,000 USDT with no trades;
+24/24 minute windows loaded. Missing historical consensus and zero timely archive
+coverage still prevent a tradable claim.
+
+Deployed 2026-11-08; completed V3 run `b008ecd5-d62a-4bd5-8c8a-7955cb796d0f`
+against baseline `618d26e8-d8ae-49b6-abdc-fc1d62615233`. All ten token accounts
+stayed in cash; USDT remained the cash control. All 24 real minute windows loaded.
+V3 report hash:
+`sha256:d75df87f1c0bb6eecfc95eecb24cbf74d01bb49bb9c9370bc08bbbe3b468918c`.
+Engine hash:
+`sha256:4da5541369f97143116f9609176f6b3ad7c3f4c3a28d934570c5f5df8d1d84e3`.
+V1/V2 recomputation reproduced the original report hash exactly. Full check passed
+1,164 tests in 67 files; eight real PostgreSQL/Redis integration tests, production
+build and doctor passed. Authenticated page/UI bundle, fees, account reconciliation,
+exports and duplicate-start reuse passed. The report survived a research-worker
+restart, and a fresh backup restored both report hashes into an isolated scratch
+database, which was removed. Financial API/worker container IDs/start times and
+five frozen financial files remained unchanged; the original ended paper run and
+its deadline remain accessible. No live news strategy was enabled.
+See [protocol](news-strategy-tests.md) and [ADR 0063](adr/0063-structured-news-v3.md).
+
+Previous addition: **six-month news strategy research** at `/news-strategy-tests`.
+All ten market tokens plus USDT cash are included. V1 fixed rules and V2 learned
+event reactions use chronological 3/1/2-month splits, 36 candidates per token,
+fees/slippage/assumed short financing and a +100 USDT research target. Archives
+remain DESCRIPTIVE_ONLY; zero historically timely versions were found. Initial
+research missed the profit target; losing/cash results are retained. A dedicated
+BullMQ worker, immutable PostgreSQL requests/reports and persistent market cache
+keep the study separate from the running market experiment.
+Deployed and completed run `618d26e8-d8ae-49b6-abdc-fc1d62615233` on the VPS.
+The report includes all ten real market snapshots, 25 aligned news events and
+zero historically timely versions. V1 ETH: -121.88 USDT; V2 BNB: -14.98;
+V2 AVAX: -32.03; other V2 accounts stayed in cash. JSON/CSV/Markdown exports,
+account reconciliation and duplicate-start reuse passed. The report hash
+`sha256:f8d82e79865241cf4313e9dc1b5e2308ec4faae6b1702334a138684c30291e94`
+survived a research-worker restart. A producer-style Redis connection prevented
+initial consumption; the fix uses worker connection settings, awaits readiness
+and has a real BullMQ consumption regression test. Fourteen PostgreSQL/Redis
+integration tests passed, production build and doctor passed; full check passed
+1,150 tests, including a full repeat after the queue connection correction.
+A fresh news backup restored into a scratch database with one completed request,
+one report, 1,157 article versions and the exact report hash; the scratch database
+was removed. The original market API and worker IDs, financial source bytes,
+deadline and all ten fresh feeds were verified unchanged. See
+[research protocol](news-strategy-tests.md) and [ADR 0062](adr/0062-historical-news-research.md).
+
+Previous source expansion:
+
+Current source expansion: all eleven SOL/XRP candidates from
+`xrp_solana_news_sources.txt` are registered (37 total). Five collectors were added:
+MIT-licensed XRPL blog index, XRPLF server releases, Solana status, Anza Agave
+releases and Helius Atom. Six candidates have explicit setup/permission notes.
+Three notification feeds collect metadata with AI off; XRPL and Helius allow
+metadata AI. Undated initial archives are manual-only for AI. Old source settings
+are preserved by insert-only seeding. Collection checks against real public
+endpoints returned 171/10/25/10/201 items respectively. Deployed 2026-11-07 08:17 UTC: all eleven collectors healthy, 1,157 records,
+filtered XRPL JSON/CSV exports verified and every prior source configuration
+preserved. `pnpm check` passed 1,141 tests; nine PostgreSQL/Redis integration tests,
+production build and doctor passed. The active paper engine stays
+frozen. See `docs/live-news-engine.md` for access references and collection limits.
+
+Previous news delivery baseline:
+
+Current delivery: **live news collection and configurable AI**, deployed at
+`/news-engine`. All 26 directory candidates remain visible; six official public
+RSS/Atom feeds collect every five minutes through BullMQ. The collector and
+analyzer have independent queues/containers and an authenticated news API. Source
+management supports add/edit, enable/disable, manual collection, cadence, origin
+and permission settings, with optimistic revisions and immutable history.
+
+The first live snapshot collected 740 real articles. Nineteen actual DeepSeek
+requests produced 18 validated structured analyses and one review-needed result;
+no fixture replacement was used. Old articles in initial snapshots retain their
+actual first-seen time today. AI classifies only permitted metadata/excerpts and
+does not establish factual verification or drive the active market strategy.
+The provider is configurable by public HTTPS compatible endpoint, model and
+private key. A persistent 100-attempt UTC daily budget includes failures.
+
+News uses database `crypto_news` and restricted role `crypto_news_app`, which was
+verified to lack superuser, role/database creation and paper-ledger write rights.
+Article versions, source history, poll receipts and AI requests/results are
+append-only. Existing market-run source files and its original deadline remain
+unchanged; the paper worker continued without restart during this delivery.
+Source/provider credentials stay in ignored local/private server settings; the
+collector/API receive no AI key and authenticated responses/exports contain none.
+
+Validation: `pnpm check` passed all 1,138 tests in 65 files, lint, formatting,
+typecheck, smoke and contracts; doctor passed. Seven real PostgreSQL/Redis news
+integration cases passed, including durable schedules, source fencing/edits,
+deduplication/revisions, permissions and AI budget receipts. The production image
+build and live collection/DeepSeek calls passed. HTTPS news pages, filters and
+exports returned 200; anonymous requests returned 401, foreign origins 403 and
+stale source edits 409. A source edit/restore round trip retained original settings
+and an audit trail. The daily BullMQ maintenance job now creates separate paper
+and news dumps; a news dump restored successfully into a scratch database with
+26 sources, 740 article versions and 19 AI results. Restarting both news workers
+preserved those records, source revisions and schedules. All 17 roadmap checksums
+remain unchanged. Browser visual
+automation was unavailable; verification used the production build, HTTP/API,
+database records and container checks. See [news operations](live-news-engine.md)
+and [ADR 0060](adr/0060-live-news-and-compatible-ai.md).
+
+## Previous Compose delivery
+
+Current delivery: **Docker Compose and BullMQ**, deployed on the existing VPS.
+`compose.production.yaml` manages the API, Next.js, isolated paper worker,
+PostgreSQL, Redis, authenticated gateway and backup worker. Private environment
+files persist in `/etc/crypto-trader/compose`; startup needs no manually entered
+environment values. Shared host nginx/Certbot remain the HTTPS edge for this and
+other sites. Previous API/web systemd units and the host backup timer are disabled.
+See [Compose operations](compose-deployment.md) and [ADR 0059](adr/0059-compose-and-bullmq.md).
+
+BullMQ schedules five-second public-feed checks and serializes paper controls;
+another queue schedules daily database backups at 02:35 UTC. Retries are bounded,
+failed jobs retained, control receipts committed inside immutable PostgreSQL
+events, and Redis uses persistent AOF with no eviction. The dashboard displays
+queue health and counts. News fixtures and historical research remain explicit
+finite operations; no live news ingestion was enabled by this infrastructure change.
+
+Run `f7024940-df8b-42f4-9989-9083e1a6c76a` resumed with the same original deadline,
+accounts, positions, frozen financial engine and existing journal prefix. The
+initial migration recorded a 25.127-second heartbeat gap, with no open positions
+and no backfilled executions. Actual Redis and worker restart checks recovered
+the same run/accounts/deadline with fresh ticks and zero failed queue jobs.
+All ten venue feeds were fresh after the switch. Prior research trees and the
+existing PostgreSQL volume are retained. Unrelated VPS services were preserved.
+
+Validation: `pnpm check` passed 1,130 tests in 64 files, lint, formatting, type
+checks, smoke and contracts; doctor passed. Six real Redis/PostgreSQL queue
+integration tests passed, including retry receipts after job removal, fencing,
+lost leases, controls during slow-feed overload and restart recovery. Controls
+use priority 1 and scheduled ticks priority 10 to prevent starvation. The
+production Docker build and Compose wait
+checks passed. A BullMQ backup completed and restored into a separate scratch
+database with 1 run, 2,098 events and 21,039 sources; the scratch database was
+removed. Forward recording replay verified after migration. Authenticated pages
+and exports returned 200, anonymous HTTPS returned 401 and foreign origins 403.
+All 17 original roadmap checksums match. Automated visual browser inspection was
+unavailable; validation used production HTTP/API, builds and recorded evidence.
+
+## Previous VPS delivery
+
+Current delivery: **authenticated VPS hosting** at
+<https://crypto-trader.nechek805.org/live-paper>, deployed to the owner-specified
+Ubuntu server without replacing its existing applications. Dedicated Node/pnpm,
+an isolated PostgreSQL container, unprivileged systemd API/web services, an
+authenticated nginx proxy, Let's Encrypt renewal and daily database backups are
+configured. Browser login does not expose or require an application API token.
+The deployed app database role is `crypto_app`, without superuser/role/database
+administration privileges. Source and root-executed backup scripts are root-owned;
+only research data and the Next cache remain writable by the service account.
+See [VPS operations](vps-deployment.md) and [ADR 0058](adr/0058-authenticated-vps-paper-deployment.md).
+
+The real-public-data **paper** run `f7024940-df8b-42f4-9989-9083e1a6c76a` started
+2026-11-06 16:43:02 UTC and retains its deadline of 2026-11-07 16:43:02 UTC
+(19:43 Moscow). All ten SOL/XRP venue feeds passed live checks, with fees on and
+10,000 virtual USDT per venue. A controlled deployment restart recovered the same
+run and deadline before the next hourly signal opportunity; no open positions
+existed during that check. Quote captures before and after the restart are kept,
+with no backfilled trades. At handoff the strategy was waiting for a fresh hourly
+signal; no completed-day profit is claimed.
+
+Deployment validation: the Linux production build passed; `pnpm check` passed
+all 1,128 tests in 63 files, lint, type checks and smoke/contracts checks after
+preserving the original unsupported-mode error messages. Doctor passed. HTTPS
+returns 200 with authentication and 401 anonymously; spoofed cross-origin requests
+are rejected, and all four filtered export formats return successfully. Recorded
+forward replay passed, a PostgreSQL backup restored into a separate scratch
+database, and Certbot renewal passed its dry run. All existing VPS containers
+remained healthy. The API, web service, database and backup/renewal timers are
+enabled for independent server operation. Checks used production HTTP/API and
+build outputs; automated visual browser inspection was unavailable.
+
+Previous local delivery:
+
+Current addition: **live multi-exchange paper trading**, `/live-paper`, with public
+SOL/XRP books on Binance, Bybit, OKX, Bitget and MEXC. Frozen V6 profiles initialize
+from completed candles; new hourly signals execute only against later fresh live
+books. Each venue has 10,000 virtual USDT, fees on, internal long/short positions,
+24-hour deadlines, pause/resume/stop, PostgreSQL recovery, source captures and
+hash-linked recorded replay. The sidebar retains all prior historical pages.
+Position inspection supports filters, numeric sorting and JSON/CSV/TSV/Markdown
+exports. See [operator guide](live-paper-trading.md) and
+[ADR 0057](adr/0057-live-multi-exchange-paper-trading.md).
+
+The separate live workspace is explicitly enabled in this checkout's ignored
+`.env`; its dedicated local PostgreSQL cluster does not replace fixture storage.
+Forward P&L must come from the saved live run; historical V6 gains below are not
+forward-performance claims. A new run can legitimately have no eligible trades.
+
+Validation on 2026-11-06: `pnpm check` passed (62 files / 1,127 tests), the
+production build passed with `/live-paper`, doctor passed, and all 17 roadmap
+checksums matched. The full PostgreSQL suite passed 34 cases; a subsequent
+forward replay test brought the forward-specific integration suite to seven
+passing cases, including an actual synthetic signal/entry/exit replay. All 23
+forward unit/API tests passed again after accounting refinements. A separate live
+network capture on all ten venue/token feeds replayed exactly in an isolated test
+schema, then that test schema was removed. No synthetic positions were inserted
+into the live namespace.
+
+The dashboard and dedicated PostgreSQL cluster are running. HTTP `/live-paper`
+returns 200 and navigation is present. Automatic approval review rejected the
+shell command to start the production paper run with the reason "blocked by
+policy"; no start was executed. `pnpm live-paper status` returned `null` at
+19:08 Moscow on 2026-11-06. Start the 24-hour run using the page's button; no
+completed-day performance is claimed.
+
+Previous completed boundary:
+
+Latest request: **separate SOL/XRP V6 short strategies**, with V5 trade diagnosis,
+old versions preserved and the same history/costs. `/long-short-tests` now defaults
+to V1–V6 results and a V6 research tab: complete candidate grids, original short
+diagnostics, matched closed-trade changes, selected rules and earlier/later evidence.
+Its original V1–V5 interface/service remains accessible. All 204 source cells, old
+report IDs, matrix pointers, fee preferences, frozen engines/contracts and datasets
+are retained; append 12 V6 cells for 216 cells / 36 profiles. New evidence and six
+fee switches live under `data/short-v6` and `/short-v6`, independently of older labs.
+
+SOL V5 shorts had 15 closed trades/five wins, +14.67447 USDT before trading fees and
+borrowing, then −16.978633874406392683 net after 28.28199323 fees and 3.371110644406392683
+borrowing; 16.02008 slippage was already embedded in fills. Shallow trends and profit
+givebacks motivated V6. Selected SOL V6 requires MA200 fall over 24 hours ≥0.75 ATR14,
+with a 2.5 ATR short target and unchanged 2.5 ATR stop. Short net becomes
+**+84.451290922260273941** (five trades/five wins); combined **+244.169074036780821892**.
+XRP V6 requires signal close 0.75–4 ATR below MA200, with a 3.5 ATR short target and
+unchanged 2 ATR stop/candle gates. Short net rises from +28.08323995196347031 to
+**+84.526438115388127845** (three trades/three wins), combined **+233.971725266872146128**.
+Both long-only outcomes remain exactly V5: SOL +158.36855711 and XRP +148.1888626.
+
+All 25 SOL and 19 XRP candidate profiles are retained. Rank only earlier short-only
+fees-on net with ≥2 closed trades and ≤2% hourly drawdown; no later/combined ranking.
+SOL's later short-only result **deteriorates** from +40.913622571255707773 to
++36.042014313972602743; XRP's later result changes from −15.22754077698630138 to zero
+with no short trades. All history was already seen, with substantial prior tuning
+and asset selection; this is exploratory evidence, not independent validation.
+Fees, slippage, 10% assumed annual borrow, collateral and every risk cap stay fixed.
+No live execution or forward eligibility gate changes. See ADR 0056 and
+`docs/sol-xrp-v6-short-research.md`.
+
+Validation: `pnpm check` passes **1,104 tests in 60 files**, lint, formatting,
+backend/web types, smoke and contracts. Production build, doctor and all 17 original
+roadmap checksums pass. Nine focused tests cover no-change compatibility in all
+modes/costs, coin-specific grids, parent/window/cost selection guards, later-price
+invariance, short-only gates/targets, unchanged long outcomes, pre-window abstention,
+trade attribution, mismatched histories, report tampering, delayed trailing gaps,
+authentication and fee persistence. All 24 V5/V6 final replays pass; all 204 original
+directional report IDs are retained. Live READ-session acceptance passes 76 selected
+reports, all 64 fee combinations, two V6 API replays, exports and four matching
+ten-link server/client navigation checks. All original matrix pointers and fee
+preferences are unchanged. All six V6-comparison fee switches are restored on, on
+disk and in the live API, and the dashboard remains running. Browser visual
+automation is unavailable; these checks do not claim a visual click-through test.
+
+Latest user request: **short support for all retained tokens**. Added a separate
+`/long-short-tests` sidebar page with original long-only, short-only and combined
+modes for all ten tokens: V1–V3 everywhere, plus the existing SOL/XRP V4/V5 profiles.
+All 34 profiles use the same 4,416 saved hourly candles and 10,000-USDT accounts.
+There are 204 comparison cells: 68 preserved original long-only report IDs and 136
+new short-enabled reports across both fee settings. Before extension, all 68 actual
+long-only compatibility checks pass against the frozen reports. New financial files
+leave every old engine, contract, dataset, result and fee preference intact.
+
+Shorts are hypothetical collateralized spot-borrow simulations: 100% collateral,
+locked proceeds, explicit base debt, next-open SELL entries/BUY covers, adverse-first
+stops/gaps, separate long/short P&L and fixed 10% annual simple borrowing charges.
+Historical borrow availability/rates remain unknown, not invented. Risk/allocation/
+prior-volume caps remain unchanged; a catastrophic gap records uncovered USDT debt
+and halts the account with negative equity while free cash stays nonnegative.
+Trading-fee switches persist independently for this comparison and do not disable
+borrowing or slippage. No live execution, futures funding claim or short optimization
+is introduced. Existing BTC/all-token/SOL-XRP pages link to the new comparison.
+
+Fees-on V5 examples: SOL long-only +158.36855711, short-only −16.978633874406392683,
+combined +141.132008077260273965 USDT. XRP long-only +148.1888626, short-only
++28.08323995196347031, combined +176.690384721689497689 USDT. Losses and weaker
+combined outcomes remain visible. Full history was previously seen; these are untuned
+short extensions, not independent validation. See ADR 0055 and
+`docs/long-short-market-tests.md`.
+
+Validation: all 136 new reports/journals replay exactly, all 68 old long-only scenarios
+reproduce in the new engine, and original IDs are retained. `pnpm check` passes 1,095
+tests in 58 files, lint, formatting, backend/web types, smoke and contracts. Production
+build (12 routes), doctor and all 17 original roadmap checksums pass. The first full
+check caught generated browser diagnostics under `data/`; ESLint now excludes that
+ignored runtime-data root alongside other generated artifacts, and the full rerun
+passes. A fresh development cache is used for dashboard restart to avoid mixing old
+and new navigation bundles. Live READ-session acceptance passes 74 selected-report
+checks, all 32 fee combinations, two exact API replays, research/report exports and
+five page/client-bundle navigation checks with the same ten links. The 68 legacy IDs,
+all original matrix pointers and all original fee preferences are unchanged. All five
+directional fee switches are restored on, on disk and in the live API. The dashboard
+remains running at `/long-short-tests`. Browser visual automation is unavailable;
+build/API/HTTP checks do not claim an automated visual or click-through test.
+
+Dashboard runtime repair (2026-11-06): a browser hydration error showed an extra
+SOL/XRP sidebar link in the server markup while the browser rendered an earlier
+navigation definition. Current route bundles agreed, pointing to stale client code
+retained across a development restart. Stopped the owned dashboard, retained the old
+generated `.next/dev` cache under a timestamped backup, and restarted with a fresh
+cache. All eight cold/warm HTTP checks across SOL/XRP, analytics, all-coin and BTC pages
+confirm the same nine sidebar links in HTML and served client code, with the correct
+active link. Opened a fresh dashboard URL; an existing browser tab may require one hard
+refresh. Saved v5 matrix ID and all enabled fee settings are unchanged. Browser visual
+hydration was not independently automated; these are server/client-bundle checks.
+
+Latest requested extension: separate **v5 exit profiles** for SOL and XRP on the exact
+saved v4 history, with fees on and unchanged capital/risk. `/sol-xrp-lab` now defaults
+to V1–V5 results, profiles, all candidate trials, matched v4→v5 closed trades,
+chronological checks, hour/fill explorer, source assumptions, exports and replay. Its
+**V4 research archive** retains the original UI/service. All other coin pages, old
+financial engines/contracts, original report IDs and fee preferences remain intact.
+New v5 artifacts and fee preferences have a separate `data/sol-xrp-v5` root.
+
+SOL v5 selects target 4 ATR when signal ATR14/close ≤0.8%, otherwise 5 ATR, keeping
+the v4 2.5 ATR stop and v2 entry rules. Net rises from +126.48422578 to
+**+158.36855711 USDT**; entry 2831 converts −14.83990199 to +17.04650968 USDT.
+XRP v5 selects target 6 ATR when completed signal range/ATR is 1.5–1.8 inclusive,
+otherwise 3.5 ATR, retaining v4 entries and 2 ATR stop. Net rises from +128.68579954
+to **+148.1888626 USDT**; entry 1000 improves by +19.36868193 USDT. Fees remain
+0.1% per side and slippage 0.05% plus tick rounding. Both start with 10,000 virtual
+USDT. SOL has 16 closed trades/eight wins; XRP only four/four.
+
+The full 18 SOL + 13 XRP development grid is retained, including inferior trailing
+profiles. Selection ranks earlier-period fees-on net profit under the same 2% hourly
+drawdown ceiling; all risk caps stay fixed. **Later independently reset checks are
+unchanged**, +2.61179711 SOL and +72.13330452 XRP. All history was previously seen;
+31 new profiles plus 36 earlier specialist profiles, prior strategy tuning and asset
+selection make this exploratory evidence. No claim of global or future maximum profit.
+See ADR 0054 and `docs/sol-xrp-v5-2026-11-06.md`.
+
+Validation: `pnpm check` passes **1,073 tests in 56 files**, lint, formatting,
+backend/web types, smoke and contracts. Production build, doctor and all 17 original
+roadmap checksums pass. All 20 final coin/version/fee-mode reports and journals replay
+exactly; the 16 earlier V1–V4 report IDs are preserved. Live local READ-session
+acceptance passes all 32 fee combinations, 42 selected report checks, research/report
+exports, and HTTP checks for SOL/XRP, all-coin and BTC pages. Original matrix IDs and
+fee preferences remain unchanged. All five v5-lab fee switches are restored on, on disk
+and in the live API. The dashboard remains running. Browser automation is unavailable;
+build/API/HTTP checks do not claim a visual click-through acceptance test.
+
+### Preserved v4 implementation evidence
+
+Current development focus is SOL/XRP only, at the user's request. Preserve all other
+coin data, reports and earlier strategy versions as references. The new sidebar page
+`/sol-xrp-lab` provides independent coin-specific v4 profiles, full v1–v4 comparisons,
+fee controls, trade/hour inspection, retained candidate searches, chronological slices,
+source assumptions, exports and deterministic verification. Existing multi-coin pages,
+settings, datasets and frozen engine source files remain unchanged.
+
+With fees on, SOL v4 (v2 base, stop 2.5 ATR, target 5 ATR) returns +126.48422578 USDT
+versus v2 +50.84150945. XRP v4 (v3 base, min signal range 0.8 ATR, target 3.5 ATR,
+stop 2 ATR) returns +128.68579954 versus v3 +103.91783956. Initial capital remains
+10,000 USDT and risk caps are unchanged. Selection uses earlier development P&L with
+fees on and a fixed drawdown ceiling; later checks are +2.61179711 SOL and +72.13330452
+XRP USDT. All history was previously seen, XRP has four full-period closed trades, and
+the extra 12 XRP hypotheses after an unsuccessful initial grid are disclosed. All 12
+SOL and 24 XRP profiles are retained; later results do not choose the winner. This is
+best within the registered grid, not a global or future maximum. All 16 final
+coin/version/fee-mode reports reproduce exactly. See ADR 0053 and
+`docs/sol-xrp-lab-2026-11-06.md`.
+Validation: `pnpm check` passes all 1,066 tests in 54 files, lint, formatting, backend/web
+typechecks, smoke and contracts. Production build, doctor and all 17 roadmap checksums
+pass. Local READ-session acceptance verifies 36 retained trials, all 16 fee-switch
+combinations, both v4 cost-mode replays, source report IDs, exports, the new page and
+the original page. The original comparison ID and fee preferences are unchanged.
+All four specialist fee switches are restored on. The dashboard is running with the
+new route available. Browser automation is unavailable; build/API/HTTP verification
+does not claim a visual click-through acceptance check.
+
+Current user correction: fees are selectable in **Market strategy tests**, with one
+global checkbox switch and individual V1/V2/V3 switches. Fees default to on (0.10%
+per side); individual switches support mixed settings across all coins and positions.
+Preferences persist across refresh/restart. Both STANDARD and ZERO scenarios are
+calculated in advance, so changing a switch selects complete immutable results without
+post-hoc arithmetic. Buy-and-hold is shown per strategy with the matching fee setting.
+Slippage remains 0.05% per side plus tick rounding. Prior matrices and frozen BTC
+engines remain intact; the standard-fee outcomes reproduce the original comparison.
+See ADR 0052 and `docs/market-strategy-tests.md` for controls and API details.
+Validation: all 60 actual historical reports reproduce exactly. All eight saved fee
+combinations pass local authenticated API acceptance (240 selected cells, matched
+buy-and-hold, mixed-mode BTC replays and export); switches took 51–88 ms. On-disk
+preferences and the live API are restored to all enabled. Build, lint, formatting,
+backend/web types, doctor and all 17 roadmap checksums pass. The full 1,060-test run
+passed 1,059 and hit a 10-second timeout in one existing market-data CLI case during
+concurrent heavy verification. Its complete 36-test file passed on isolated retry.
+API/web remain running. Browser visual/click acceptance is unavailable.
+
+Previous cost setting for **Market strategy tests**: trading fees are excluded (0% per
+side) across all coins, v1/v2/v3 and buy-and-hold. Slippage remains 0.05% per side plus
+tick rounding. All 30 actual historical runs completed and all 30 exact replays passed;
+the earlier paid-fee matrix and original BTC engines/reports remain intact. New plans
+and matrix record ZERO fee mode. Sizing, account debits and v2/v3 cost gates use the
+effective zero fee, rather than adding recorded fees back to old P&L. BTC nets are now
++30.0547265 / +27.2966779 / +35.3156004 virtual USDT for v1/v2/v3. See ADR 0051 and
+`docs/market-strategy-zero-fees-2026-11-04.md` for the complete retained comparison.
+Validation: `pnpm check` passes 1,050 tests in 51 files, lint, formatting, backend/web
+typechecks, smoke and contracts. Production build, doctor and all 17 roadmap checksums
+pass. The restarted live API serves ZERO mode and zero fees for all 30 reports; all
+three BTC reports also verify through the authenticated API. Page and export return 200. Owned API/web sessions remain running. Browser visual acceptance is unavailable.
+
+Latest user-requested extension: **Market strategy tests** adds the sidebar route
+`/market-strategy-tests` with Results, Strategies, Trade explorer and Sources & assumptions.
+Ten actual crypto/USDT histories (BTC, ETH, SOL, TRX, BNB, XRP, DOGE, ADA, LINK, AVAX)
+share the frozen BTC six-month hourly window; all 30 v1/v2/v3 runs use independent
+10,000 virtual USDT accounts. USDT is a cash control, not a synthetic USDTUSDT market.
+All ten captures and all 30 deterministic replays pass, with coin-specific tick/lot
+filters, actual base-asset ledgers, raw-source hashes and decimal Parquet verification.
+Original BTC decisions, fills, summaries and journals reproduce exactly for all versions.
+Current metadata is explicitly a retrospective assumption; native forward gates remain
+unchanged. Every market/version, including losses and failures, stays visible. See
+ADR 0050, `docs/market-strategy-tests.md` and `docs/market-strategy-results-2026-11-04.md`.
+`pnpm check` passes 1,047 tests in 51 files, lint, formatting, backend/web typechecks,
+smoke and contracts. Production build, doctor and all 17 roadmap checksums pass.
+Local HTTP acceptance covers the new sidebar/page (200, no welcome splash), authenticated
+matrix/catalog/exports and exact selected BTC/ETH/TRX/SOL replays. The completed matrix
+survives service restart. Browser automation is unavailable; visual/click acceptance is
+not claimed. The owned dashboard remains running for user testing.
+
+Latest user-requested research iteration: v3 adds causal signal-candle close-location
+and range/ATR gates to frozen v2. The same snapshot yields v1 −70.7025561291, v2
+−1.5624756796, and v3 +19.2079054528 virtual USDT. Both earlier engines/report IDs
+remain unchanged and reproduce exactly. Three strategies/two revisions are disclosed;
+all periods are previously seen. V3 has only seven trades, its later slice only two,
+and doubled same-fill recorded costs would make it negative. No forward promotion.
+The dashboard adds all three version selectors, v2 diagnosis, skipped trades, period
+breakdowns and cost sensitivity. See ADR 0049 and `docs/btc-strategy-v3-2026-11-04.md`.
+`pnpm check` passes 1,033 tests in 49 files, lint, formatting, backend/web typechecks,
+smoke and contracts. Production build and doctor pass. All 17 roadmap checksums match.
+Local READ-session acceptance reruns the three-way job, selects all three versions and
+verifies each report exactly. Export and dashboard page return 200, without the welcome
+splash. The dashboard remains running with v3 selected. Browser automation is unavailable;
+the UI has build/HTTP verification rather than a visual browser acceptance check.
+
+Latest BTC research extension: diagnosed the user's frozen −70.70 USDT run and tested
+one versioned MA200 trend/cost-filter revision on the same snapshot. The original engine
+and report remain intact and reproduce exactly. Full-period v2 net is −1.5624756796 USDT
+versus original −70.7025561291, with 11 versus 50 closed trades and lower exposure/costs.
+The later chronological check remains negative, so this is research evidence rather
+than a validated profitable strategy. The dashboard provides side-by-side comparison,
+attribution, original/revised decision inspection and exports. See ADR 0048 and
+`docs/btc-strategy-revision-2026-11-04.md`. `pnpm check` passes 1,024 tests in 48 files,
+lint, formatting, backend/web typechecks, smoke and contracts. Production build and doctor
+pass. Local API acceptance verifies authenticated original/revised selection, both exact
+replays, comparison export and the served page. Browser automation is unavailable in this
+turn. All 17 roadmap checksums match. The dashboard remains running for user review.
 
 Current user-requested extension: a guided `/market-test` dashboard page uses real BTCUSDT
 hourly candles, six calendar months and 10,000 virtual USDT. Public raw responses and

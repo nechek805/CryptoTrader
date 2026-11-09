@@ -33,3 +33,5 @@ export * from './panel-client.js';
 export * from './panel-fixture.js';
 export * from './panel-report.js';
 export * from './btc-history.js';
+export * from './market-test-history.js';
+export * from './market-test-inputs.js';

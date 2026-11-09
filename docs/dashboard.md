@@ -1,7 +1,23 @@
 # Research dashboard and operations
 
-Use the pinned Windows runtime from README, then `pnpm dashboard`. Startup verifies the
+The new **Live paper trading** page at <http://127.0.0.1:3100/live-paper> uses real
+public SOL/XRP feeds on five exchanges and a separate persistent PostgreSQL
+database. Its 24-hour positions and P&L are independent of the historical and
+synthetic research pages described below. See [live paper trading](live-paper-trading.md).
+
+Run `pnpm dashboard` directly; no per-session PATH command is needed. The launcher reads
+`NODE_RUNTIME_DIR` from the project `.env`, checks the pinned Node version, and uses it
+for the dashboard and its child processes. Relative runtime paths follow the project
+folder when it is moved. Windows also detects the installed portable runtime when the
+setting is empty. Existing process environment settings take precedence over `.env`.
+Use `pnpm dashboard --check` to verify runtime selection without starting servers.
+The workspace also pins `useNodeVersion` so pnpm can bootstrap before `.env` is read,
+even when the system Node version differs. pnpm caches that runtime after first use.
+
+Startup verifies the
 synthetic archives before starting the UI at http://127.0.0.1:3100 (API 3101).
+The launcher allows up to five minutes for the accumulated immutable research
+archives to verify on a cold start; it prints the verification message while waiting.
 The local synthetic dashboard opens automatically with read access. There is no token
 prompt or demo-entry button. These are virtual balances and fictional inputs.
 Known fixture tokens exist only in fixture mode; deployment refuses them.
@@ -64,3 +80,20 @@ survived with no fills. `data/dashboard/dependency-audit.json` records zero prod
 findings. Screenshots in `data/dashboard/screenshots/` document desktop trace and mobile
 rendering. These are local evidence, not a public deployment or long-running load result.
 Local alerts are the paper log, CLI status and dashboard API; no external messages sent.
+
+The **Market strategy tests** sidebar page adds the frozen v1/v2/v3 comparison across
+ten public crypto/USDT histories and a USDT cash control. See
+[the step-by-step guide](market-strategy-tests.md) for results, strategy descriptions,
+trade inspection, source assumptions, exports and exact replay. It uses independent
+10,000 virtual USDT accounts and does not change the four native paper portfolios.
+
+The **SOL & XRP strategy lab** sidebar page opens the latest separate v5 exit profiles,
+V1–V5 comparisons on the same frozen history, fees on by default, all development
+trials, chronological checks and matched v4→v5 trades. Its **V4 research archive** keeps
+the original v4 page and settings. See [v5 results and reproduction](sol-xrp-v5-2026-11-06.md).
+
+**Long & short tests** adds original long-only, short-only and combined modes for
+every retained token, including SOL/XRP V4/V5. Borrowing, collateral, loan balances,
+long/short contributions and explicit costs are inspectable alongside the original
+results. See [the long/short guide](long-short-market-tests.md) for assumptions,
+step-by-step testing and reproduction. Existing market pages link to this comparison.

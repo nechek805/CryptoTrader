@@ -38,6 +38,27 @@ it('authenticates BTC research routes, enforces Origin and rejects arbitrary dow
   try {
     expect((await app.inject('/btc-test')).statusCode).toBe(401);
     expect(
+      (
+        await app.inject({
+          method: 'POST',
+          url: '/btc-test/select',
+          payload: { strategy: 'THIRD' },
+        })
+      ).statusCode,
+    ).toBe(401);
+    expect(
+      (await app.inject({ method: 'POST', url: '/btc-test/compare', payload: {} })).statusCode,
+    ).toBe(401);
+    expect(
+      (
+        await app.inject({
+          method: 'POST',
+          url: '/btc-test/select',
+          payload: { strategy: 'REVISED' },
+        })
+      ).statusCode,
+    ).toBe(401);
+    expect(
       (await app.inject({ method: 'POST', url: '/btc-test/download', payload: {} })).statusCode,
     ).toBe(401);
     const login = await app.inject({
@@ -52,8 +73,50 @@ it('authenticates BTC research routes, enforces Origin and rejects arbitrary dow
       datasetId: null,
       reportId: null,
       job: null,
+      comparisonId: null,
     });
     expect((await app.inject({ url: '/btc-test/data', headers })).statusCode).toBe(404);
+    expect(
+      (
+        await app.inject({
+          method: 'POST',
+          url: '/btc-test/select',
+          headers,
+          payload: { strategy: 'THIRD' },
+        })
+      ).statusCode,
+    ).toBe(400);
+    expect((await app.inject({ url: '/btc-test/comparison', headers })).statusCode).toBe(404);
+    expect(
+      (
+        await app.inject({
+          method: 'POST',
+          url: '/btc-test/compare',
+          headers,
+          payload: { datasetId: '../../file', url: 'http://127.0.0.1/private' },
+        })
+      ).statusCode,
+    ).toBe(400);
+    expect(
+      (
+        await app.inject({
+          method: 'POST',
+          url: '/btc-test/select',
+          headers,
+          payload: { strategy: 'arbitrary' },
+        })
+      ).statusCode,
+    ).toBe(400);
+    expect(
+      (
+        await app.inject({
+          method: 'POST',
+          url: '/btc-test/select',
+          headers,
+          payload: { strategy: 'REVISED' },
+        })
+      ).statusCode,
+    ).toBe(400);
     expect(
       (
         await app.inject({

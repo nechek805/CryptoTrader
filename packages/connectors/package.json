@@ -7,6 +7,7 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
+    "decimal.js": "10.6.0",
     "@crypto/contracts": "workspace:*",
     "@crypto/core": "workspace:*",
     "csv-parse": "7.0.3",

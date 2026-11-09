@@ -16,7 +16,7 @@ const root = fileURLToPath(new URL('../../../', import.meta.url)),
   );
 process.stdout.write('Verifying local research archives before opening the UI…\n');
 let ready = false;
-for (let attempt = 0; attempt < 120 && api.exitCode === null; attempt++) {
+for (let attempt = 0; attempt < 300 && api.exitCode === null; attempt++) {
   try {
     ready = (await fetch('http://127.0.0.1:3101/ready', { signal: AbortSignal.timeout(500) })).ok;
   } catch {

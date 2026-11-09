@@ -12,3 +12,8 @@ Validate public interfaces with Zod, preserve source provenance and add meaningf
 Use the pinned Node and pnpm versions. Run `pnpm check` and `pnpm run doctor` for changes
 to the foundation. Do not rewrite `project_roadmap/` files or their recorded checksums.
 The Windows `.tools/` runtime is ignored; setup instructions are in `README.md`.
+
+Production backups were disabled at the user's request on 2026-11-08. Do not
+create server-side backups (including pre-deployment database dumps or `.before`
+configuration copies), or re-enable backup schedules, unless the user explicitly
+asks to change this policy. Preserve the live databases and research datasets.

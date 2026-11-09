@@ -1,0 +1,34 @@
+[Unit]
+Description=Crypto Trader public-feed paper trading API and worker
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+StartLimitIntervalSec=600
+StartLimitBurst=10
+
+[Service]
+Type=simple
+User=crypto-trader
+Group=crypto-trader
+WorkingDirectory=/opt/crypto-trader/current
+EnvironmentFile=/etc/crypto-trader/app.env
+Environment=NODE_ENV=production
+Environment=PATH=/opt/crypto-trader/runtime/node-v24.22.2-linux-x64/bin:/usr/bin:/bin
+ExecStart=/opt/crypto-trader/runtime/node-v24.22.2-linux-x64/bin/node --max-old-space-size=512 --import tsx apps/api/src/operations-main.ts
+Restart=always
+RestartSec=10
+TimeoutStopSec=45
+KillSignal=SIGTERM
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/crypto-trader/data
+MemoryHigh=650M
+MemoryMax=900M
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

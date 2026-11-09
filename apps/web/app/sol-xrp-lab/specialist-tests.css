@@ -1,0 +1,35 @@
+.specialist-tests .specialist-matrix {
+  width: 100%;
+  min-width: 1050px;
+  table-layout: fixed;
+}
+.specialist-matrix th:first-child {
+  width: 110px;
+}
+.specialist-matrix th,
+.specialist-matrix td {
+  padding: 18px 12px;
+  vertical-align: top;
+  text-align: left;
+}
+.specialist-tests table small {
+  display: block;
+  color: #607273;
+  line-height: 1.8;
+  font-size: 11px;
+  font-weight: 400;
+}
+.specialist-profile {
+  background: #eef3e9;
+  border: 1px solid #cbdcc7;
+  border-radius: 7px;
+  padding: 20px;
+  margin: 20px 0;
+}
+.specialist-profile strong {
+  font-weight: 500;
+  line-height: 1.8;
+}
+.specialist-selected {
+  background: #e6efe1;
+}

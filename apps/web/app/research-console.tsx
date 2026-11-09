@@ -3,6 +3,13 @@ import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { z } from 'zod';
 import BtcTest from './market-test/btc-test';
+import MarketStrategyTests from './market-strategy-tests/market-strategy-tests';
+import SpecialistTests from './sol-xrp-lab/workspace';
+import DirectionalTests from './long-short-tests/workspace';
+import LiveWorkspace from './live-paper/workspace';
+import NewsPaperWorkspace from './news-paper/workspace';
+import NewsWorkspace from './news-engine/workspace';
+import NewsStrategyTests from './news-strategy-tests/workspace';
 import {
   OpsOverviewSchema,
   OpsCurveSchema,
@@ -22,7 +29,20 @@ import type {
 } from '@crypto/contracts';
 
 type View =
-  'overview' | 'runs' | 'provenance' | 'trades' | 'analytics' | 'operations' | 'market-test';
+  | 'news-strategy-tests'
+  | 'news-engine'
+  | 'news-paper'
+  | 'live-paper'
+  | 'overview'
+  | 'runs'
+  | 'provenance'
+  | 'trades'
+  | 'analytics'
+  | 'operations'
+  | 'market-test'
+  | 'market-strategy-tests'
+  | 'sol-xrp-lab'
+  | 'long-short-tests';
 const labels = {
   BASELINE: 'Cash baseline',
   NEWS_ONLY: 'News only',
@@ -36,6 +56,10 @@ const colors = {
   FUSION: '#5879b2',
 };
 const paths: [View, string, string][] = [
+  ['news-engine', '/news-engine', 'Live news engine'],
+  ['news-paper', '/news-paper', 'News paper trading'],
+  ['news-strategy-tests', '/news-strategy-tests', 'News strategy tests'],
+  ['live-paper', '/live-paper', 'Live paper trading'],
   ['overview', '/', 'Overview'],
   ['runs', '/runs', 'Paper runs'],
   ['provenance', '/provenance', 'News provenance'],
@@ -43,6 +67,9 @@ const paths: [View, string, string][] = [
   ['analytics', '/analytics', 'Comparison lab'],
   ['operations', '/operations', 'Operations'],
   ['market-test', '/market-test', 'BTC market test'],
+  ['market-strategy-tests', '/market-strategy-tests', 'Market strategy tests'],
+  ['sol-xrp-lab', '/sol-xrp-lab', 'SOL & XRP strategy lab'],
+  ['long-short-tests', '/long-short-tests', 'Long & short tests'],
 ];
 const time = (s: string) =>
   new Date(s).toLocaleString('en-GB', {
@@ -257,7 +284,16 @@ export default function Dashboard({ view }: { view: View }) {
         );
         session = await api('/session', sessionSchema);
       }
-      if (view === 'market-test') {
+      if (
+        view === 'market-test' ||
+        view === 'market-strategy-tests' ||
+        view === 'sol-xrp-lab' ||
+        view === 'long-short-tests' ||
+        view === 'live-paper' ||
+        view === 'news-engine' ||
+        view === 'news-paper' ||
+        view === 'news-strategy-tests'
+      ) {
         setRole(session.role);
         setLocked(false);
         return;
@@ -391,7 +427,9 @@ export default function Dashboard({ view }: { view: View }) {
         <nav>
           {paths.map(([key, href, label], i) => (
             <Link key={key} href={href} className={view === key ? 'active' : ''}>
-              <span className="nav-symbol">{['▦', '◷', '⌘', '⇄', '◫', '⚙', '₿'][i]}</span>
+              <span className="nav-symbol">
+                {['◈', '◉', '▦', '◷', '⌘', '⇄', '◫', '⚙', '₿', '▥', '◎', '⇅'][i]}
+              </span>
               {label}
               {key === 'operations' && overview && (
                 <span className="nav-count">{overview.counts.alerts}</span>
@@ -424,45 +462,137 @@ export default function Dashboard({ view }: { view: View }) {
           <div className="page-heading">
             <div>
               <div className="eyebrow">
-                {view === 'market-test'
-                  ? 'MARKET RESEARCH / REAL BTC HISTORY'
-                  : 'PAPER RESEARCH / FOUR INDEPENDENT ARMS'}
+                {view === 'news-strategy-tests'
+                  ? 'HISTORICAL NEWS / EXPLORATORY STRATEGIES'
+                  : view === 'news-paper'
+                    ? 'LIVE NEWS / SIMULATED FORWARD TRADING'
+                    : view === 'news-engine'
+                      ? 'LIVE NEWS / COLLECTION AND ANALYSIS'
+                      : view === 'live-paper'
+                        ? 'PUBLIC LIVE DATA / VIRTUAL EXECUTION'
+                        : view === 'long-short-tests'
+                          ? 'MARKET RESEARCH / LONG AND SHORT'
+                          : view === 'sol-xrp-lab'
+                            ? 'COIN-SPECIFIC RESEARCH / SOL & XRP'
+                            : view === 'market-strategy-tests'
+                              ? 'MARKET RESEARCH / STRATEGY COMPARISON'
+                              : view === 'market-test'
+                                ? 'MARKET RESEARCH / REAL BTC HISTORY'
+                                : 'PAPER RESEARCH / FOUR INDEPENDENT ARMS'}
               </div>
               <h1>{paths.find((p) => p[0] === view)![2]}</h1>
               <p>
-                {view === 'market-test'
-                  ? 'Load real candles, run a fixed strategy and trace every virtual decision.'
-                  : view === 'overview'
-                    ? 'A clear view of decisions, costs and the evidence behind them.'
-                    : view === 'provenance'
-                      ? 'Attribution, dependencies and corrections stay separate from return predictions.'
-                      : 'Every result belongs to a frozen source snapshot and a simulated ledger.'}
+                {view === 'news-strategy-tests'
+                  ? 'Study news reactions and hypothetical long/short positions across all tokens, with honest history and evaluation gates.'
+                  : view === 'news-engine'
+                    ? 'Read collected news, inspect AI analysis and manage source collection.'
+                    : view === 'news-paper'
+                      ? 'Follow a separate news-only 24-hour paper test across ten tokens and five exchanges, with fees on.'
+                      : view === 'live-paper'
+                        ? 'Track a 24-hour forward test across Binance, Bybit, OKX, Bitget and MEXC.'
+                        : view === 'long-short-tests'
+                          ? 'Compare both directions, trace borrowing and retain every original long-only result.'
+                          : view === 'sol-xrp-lab'
+                            ? 'Separate SOL and XRP v5 profiles, with V1–V5 comparisons and the V4 archive.'
+                            : view === 'market-strategy-tests'
+                              ? 'Compare three strategies across real crypto history and understand every result.'
+                              : view === 'market-test'
+                                ? 'Load real candles, run a fixed strategy and trace every virtual decision.'
+                                : view === 'overview'
+                                  ? 'A clear view of decisions, costs and the evidence behind them.'
+                                  : view === 'provenance'
+                                    ? 'Attribution, dependencies and corrections stay separate from return predictions.'
+                                    : 'Every result belongs to a frozen source snapshot and a simulated ledger.'}
               </p>
             </div>
-            {view !== 'market-test' && (
-              <a className="button export" href="/api/exports/json">
-                ↓ Export report
-              </a>
-            )}
+            {view !== 'news-strategy-tests' &&
+              view !== 'news-engine' &&
+              view !== 'news-paper' &&
+              view !== 'market-test' &&
+              view !== 'live-paper' &&
+              view !== 'long-short-tests' &&
+              view !== 'market-strategy-tests' &&
+              view !== 'sol-xrp-lab' && (
+                <a className="button export" href="/api/exports/json">
+                  ↓ Export report
+                </a>
+              )}
           </div>
           {error && (
             <div className="notice error" role="alert">
               {error}
             </div>
           )}
-          {view !== 'market-test' && overview && (
-            <div className="context-bar">
-              <span className="context-dot" />
-              <strong>
-                {overview.origin === 'SYNTHETIC'
-                  ? 'Synthetic research scenario'
-                  : 'Public data · virtual execution'}
-              </strong>
-              <span>As of {time(overview.asOf)} UTC</span>
-              <span className="context-status">{overview.status}</span>
+          {view !== 'news-strategy-tests' &&
+            view !== 'news-engine' &&
+            view !== 'news-paper' &&
+            view !== 'market-test' &&
+            view !== 'live-paper' &&
+            view !== 'long-short-tests' &&
+            view !== 'market-strategy-tests' &&
+            view !== 'sol-xrp-lab' &&
+            overview && (
+              <div className="context-bar">
+                <span className="context-dot" />
+                <strong>
+                  {overview.origin === 'SYNTHETIC'
+                    ? 'Synthetic research scenario'
+                    : 'Public data · virtual execution'}
+                </strong>
+                <span>As of {time(overview.asOf)} UTC</span>
+                <span className="context-status">{overview.status}</span>
+              </div>
+            )}
+          {['market-test', 'market-strategy-tests', 'sol-xrp-lab'].includes(view) && (
+            <div className="notice">
+              <Link href={`/long-short-tests${view === 'market-test' ? '?asset=BTC' : ''}`}>
+                Long + short tests are now available for all ten tokens →
+              </Link>
             </div>
           )}
-          {view === 'market-test' ? (
+          {view === 'news-strategy-tests' ? (
+            loading || locked ? (
+              <div className="panel empty">Opening historical news research�</div>
+            ) : (
+              <NewsStrategyTests role={role} />
+            )
+          ) : view === 'news-paper' ? (
+            loading || locked ? (
+              <div className="panel empty">Connecting news paper trading…</div>
+            ) : (
+              <NewsPaperWorkspace />
+            )
+          ) : view === 'news-engine' ? (
+            loading || locked ? (
+              <div className="panel empty">Opening live news…</div>
+            ) : (
+              <NewsWorkspace role={role} />
+            )
+          ) : view === 'live-paper' ? (
+            loading || locked ? (
+              <div className="panel empty">Connecting live paper workspace…</div>
+            ) : (
+              <LiveWorkspace />
+            )
+          ) : view === 'long-short-tests' ? (
+            loading || locked ? (
+              <div className="panel empty">Opening long and short research…</div>
+            ) : (
+              <DirectionalTests />
+            )
+          ) : view === 'sol-xrp-lab' ? (
+            loading || locked ? (
+              <div className="panel empty">Opening SOL and XRP research…</div>
+            ) : (
+              <SpecialistTests />
+            )
+          ) : view === 'market-strategy-tests' ? (
+            loading || locked ? (
+              <div className="panel empty">Opening market strategy research…</div>
+            ) : (
+              <MarketStrategyTests />
+            )
+          ) : view === 'market-test' ? (
             loading || locked ? (
               <div className="panel empty">Opening BTC research…</div>
             ) : (

@@ -14,3 +14,4 @@ export * from './live-news-config.js';
 export * from './live-news.js';
 export * from './paper-public-feed.js';
 export * from './news-review-fixtures.js';
+export * from './live-paper-exchanges.js';

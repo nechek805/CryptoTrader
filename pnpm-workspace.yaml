@@ -2,6 +2,9 @@ packages:
   - apps/*
   - packages/*
 
+# Select the pinned runtime before package scripts and engine checks run.
+useNodeVersion: 24.22.2
+
 # Only esbuild's platform binary setup is permitted to run at install time.
 onlyBuiltDependencies:
   - esbuild

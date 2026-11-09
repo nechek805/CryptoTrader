@@ -6,6 +6,7 @@ export default tseslint.config(
     ignores: [
       'node_modules/**',
       '.tools/**',
+      'data/**', // Generated captures, immutable reports and local diagnostics are not source.
       '**/dist/**',
       '**/.next/**',
       'coverage/**',

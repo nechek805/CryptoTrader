@@ -3,8 +3,8 @@ import { canonicalJson } from '@crypto/core';
 
 async function main() {
   const action = process.argv[2];
-  if (!['download', 'run', 'verify', 'status'].includes(action ?? ''))
-    throw new Error('Usage: pnpm btc-test download|run|verify|status');
+  if (!['download', 'run', 'compare', 'verify', 'status'].includes(action ?? ''))
+    throw new Error('Usage: pnpm btc-test download|run|compare|verify|status');
   const service = await createBtcTestService('data/btc-market-test');
   if (action === 'status') {
     process.stdout.write(canonicalJson(service.state()) + '\n');
@@ -14,7 +14,10 @@ async function main() {
     process.stdout.write(canonicalJson(await service.verify()) + '\n');
     return;
   }
-  service.start(action === 'download' ? 'DOWNLOAD' : 'RUN', service.state().datasetId ?? undefined);
+  service.start(
+    action === 'download' ? 'DOWNLOAD' : action === 'compare' ? 'COMPARE' : 'RUN',
+    service.state().datasetId ?? undefined,
+  );
   let last = '';
   while (service.state().job?.status === 'RUNNING') {
     const message = service.state().job!.message;

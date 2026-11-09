@@ -14,6 +14,7 @@ import {
   compareDecimal,
   opsPageSchema,
   PaperEventSchema,
+  HashSchema,
 } from '@crypto/contracts';
 import type { OpsOverview, PaperEvent, PaperReport } from '@crypto/contracts';
 import { canonicalHash, decimal, subtractDecimal, addDecimal } from '@crypto/core';
@@ -23,9 +24,28 @@ import { evaluationEvidence, evaluationMarkdown, verifyEvaluationReport } from '
 import { validateNewsEventSnapshot } from '@crypto/news';
 import { registerBtcTestRoutes } from './btc-test.js';
 import type { BtcTestService } from './btc-test.js';
+import { registerMarketStrategyRoutes } from './market-strategy-tests.js';
+import type { MarketStrategyService } from './market-strategy-tests.js';
+import { registerSpecialistRoutes } from './specialist-tests.js';
+import type { SpecialistService } from './specialist-tests.js';
+import { registerSpecialistV5Routes } from './specialist-v5.js';
+import type { SpecialistV5Service } from './specialist-v5.js';
+import { registerDirectionalRoutes } from './directional-tests.js';
+import type { DirectionalService } from './directional-tests.js';
+import { registerShortV6Routes } from './short-v6.js';
+import type { ShortV6Service } from './short-v6.js';
+import { registerLivePaperRoutes } from './live-paper.js';
+import type { LivePaperService } from './live-paper.js';
 
 export interface OpsPorts {
+  trustedProxy?: { tokenHash: string };
+  livePaper?: LivePaperService;
   btcTest?: BtcTestService;
+  marketTests?: MarketStrategyService;
+  specialists?: SpecialistService;
+  specialistsV5?: SpecialistV5Service;
+  directionalTests?: DirectionalService;
+  shortV6?: ShortV6Service;
   demoAutoLogin?: boolean;
   control?: (event: PaperEvent) => Promise<PaperReport>;
   refresh?: () => Promise<PaperReport>;
@@ -33,6 +53,17 @@ export interface OpsPorts {
 export function buildOperationsApp(input: unknown, securityInput: unknown, ports: OpsPorts = {}) {
   const data = OpsDatasetSchema.parse(input),
     security = OpsSecuritySchema.parse(securityInput);
+  if (
+    ports.trustedProxy &&
+    (security.mode !== 'DEPLOYMENT' ||
+      !HashSchema.safeParse(ports.trustedProxy.tokenHash).success ||
+      [security.readerTokenHash, security.adminTokenHash].includes(ports.trustedProxy.tokenHash))
+  )
+    throw new Error('Invalid authenticated proxy boundary');
+  if (ports.livePaper && security.mode !== 'LOCAL' && !ports.trustedProxy)
+    throw new Error(
+      'Live paper controls require local workspace or authenticated deployment proxy',
+    );
   let paper = verifyPaperReport(data.paper);
   let runHash = canonicalHash(paper);
   const healthOf = () => {
@@ -120,13 +151,28 @@ export function buildOperationsApp(input: unknown, securityInput: unknown, ports
         .map((p) => p.trim())
         .find((p) => p.startsWith('research_session='))
         ?.slice('research_session='.length),
-      role = bearer ? roleForToken(bearer) : cookie ? (sessions.get(cookie)?.role ?? null) : null;
+      proxyToken = req.headers['x-crypto-proxy-auth'],
+      proxyRole =
+        ports.trustedProxy &&
+        typeof proxyToken === 'string' &&
+        proxyToken.length >= 32 &&
+        proxyToken.length <= 200 &&
+        match(proxyToken, ports.trustedProxy.tokenHash)
+          ? 'ADMIN'
+          : null,
+      role =
+        proxyRole ??
+        (bearer ? roleForToken(bearer) : cookie ? (sessions.get(cookie)?.role ?? null) : null);
     if (!role) {
       void reply.code(401).send({ error: 'AUTHENTICATION_REQUIRED' });
       return;
     }
     if (req.method !== 'GET' && !bearer && !req.headers.origin) {
       void reply.code(403).send({ error: 'ORIGIN_REQUIRED' });
+      return;
+    }
+    if (security.mode === 'DEPLOYMENT' && req.method !== 'GET' && role !== 'ADMIN') {
+      void reply.code(403).send({ error: 'ADMIN_REQUIRED' });
       return;
     }
     roles.set(req, role);
@@ -139,9 +185,34 @@ export function buildOperationsApp(input: unknown, securityInput: unknown, ports
     demoAutoLogin: ports.demoAutoLogin === true,
   }));
   if (ports.btcTest) {
-    if (security.mode !== 'LOCAL')
+    if (security.mode !== 'LOCAL' && !ports.trustedProxy)
       throw new Error('BTC retrospective jobs are local research only');
     registerBtcTestRoutes(app, ports.btcTest);
+  }
+  if (ports.marketTests) {
+    if (security.mode !== 'LOCAL' && !ports.trustedProxy)
+      throw new Error('Market strategy jobs are local research only');
+    registerMarketStrategyRoutes(app, ports.marketTests);
+  }
+  if (ports.specialists) {
+    if (security.mode !== 'LOCAL' && !ports.trustedProxy)
+      throw new Error('Specialist research is local only');
+    registerSpecialistRoutes(app, ports.specialists);
+  }
+  if (ports.specialistsV5) {
+    if (security.mode !== 'LOCAL' && !ports.trustedProxy)
+      throw new Error('Specialist v5 research is local only');
+    registerSpecialistV5Routes(app, ports.specialistsV5);
+  }
+  if (ports.directionalTests) {
+    if (security.mode !== 'LOCAL' && !ports.trustedProxy)
+      throw new Error('Directional research is local only');
+    registerDirectionalRoutes(app, ports.directionalTests);
+  }
+  if (ports.shortV6) {
+    if (security.mode !== 'LOCAL' && !ports.trustedProxy)
+      throw new Error('Short V6 research is local only');
+    registerShortV6Routes(app, ports.shortV6);
   }
   app.post('/session', (req, reply) => {
     const body = z.strictObject({ token: z.string().min(32).max(200) }).parse(req.body),
@@ -614,6 +685,16 @@ export function buildOperationsApp(input: unknown, securityInput: unknown, ports
   app.setNotFoundHandler((_req, reply) =>
     reply.code(404).send({ schemaVersion: 'ops-error.v1', error: 'NOT_FOUND' }),
   );
+  if (ports.livePaper) {
+    registerLivePaperRoutes(app, ports.livePaper);
+    app.addHook('onListen', (done) => {
+      ports.livePaper!.startWorker();
+      done();
+    });
+    app.addHook('onClose', async () => {
+      await ports.livePaper!.close();
+    });
+  }
   app.setErrorHandler((_error, _req, reply) => {
     void reply
       .code(400)

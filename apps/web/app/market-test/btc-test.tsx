@@ -7,10 +7,14 @@ import {
   BtcJobSchema,
   BtcReportSchema,
   BtcStateSchema,
+  BtcAnyComparisonSchema,
   HashSchema,
 } from '@crypto/contracts';
+import BtcComparisonPanel from './comparison-panel';
+import type { BtcSelection } from './comparison-panel';
 
 const Report = z.strictObject({ id: HashSchema, report: BtcReportSchema });
+const Comparison = z.strictObject({ id: HashSchema, comparison: BtcAnyComparisonSchema });
 const date = (ms: number) => new Date(ms).toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
 const money = (v: string | number) =>
   Number(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -102,7 +106,8 @@ function Chart({
 export default function BtcTest() {
   const [state, setState] = useState<z.infer<typeof BtcStateSchema> | null>(null),
     [data, setData] = useState<z.infer<typeof BtcDataViewSchema> | null>(null),
-    [result, setResult] = useState<z.infer<typeof Report> | null>(null);
+    [result, setResult] = useState<z.infer<typeof Report> | null>(null),
+    [comparison, setComparison] = useState<z.infer<typeof Comparison> | null>(null);
   const [step, setStep] = useState(1),
     [index, setIndex] = useState(49),
     [error, setError] = useState(''),
@@ -111,7 +116,8 @@ export default function BtcTest() {
     [tradePage, setTradePage] = useState(0);
   const dataId = useRef<string | null>(null),
     reportId = useRef<string | null>(null),
-    live = useRef(true);
+    live = useRef(true),
+    comparisonId = useRef<string | null>(null);
   const player = useRef<HTMLElement>(null);
   useEffect(() => {
     window.scrollTo({ top: 0 });
@@ -124,6 +130,12 @@ export default function BtcTest() {
         const next = await request('', BtcStateSchema);
         if (!live.current) return;
         setState(next);
+        if ((next.comparisonId ?? null) !== comparisonId.current) {
+          const value = next.comparisonId ? await request('/comparison', Comparison) : null;
+          if (!live.current) return;
+          setComparison(value);
+          comparisonId.current = next.comparisonId ?? null;
+        }
         if (next.datasetId !== dataId.current) {
           const value = next.datasetId ? await request('/data', BtcDataViewSchema) : null;
           if (!live.current) return;
@@ -151,23 +163,40 @@ export default function BtcTest() {
       clearTimeout(timer);
     };
   }, []);
-  async function start(kind: 'download' | 'run') {
+  async function start(kind: 'download' | 'run' | 'compare') {
     setBusy(true);
     setError('');
     try {
       const job = await request(
         `/${kind}`,
         BtcJobSchema,
-        kind === 'run' ? { datasetId: data?.id } : {},
+        kind !== 'download' ? { datasetId: data?.id } : {},
       );
       setState((s) => ({ ...s!, job }));
-      if (kind === 'run') {
+      if (kind !== 'download') {
         setStep(3);
         setIndex(49);
         setTradePage(0);
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Research task failed.');
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function selectStrategy(strategy: BtcSelection) {
+    setBusy(true);
+    setError('');
+    try {
+      const selected = await request('/select', Report, { strategy });
+      setResult(selected);
+      reportId.current = selected.id;
+      setStep(3);
+      setIndex(selected.report.decisions.find((d) => d.action === 'LONG')?.index ?? 49);
+      setTradePage(0);
+      setVerified(false);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not open the selected report.');
     } finally {
       setBusy(false);
     }
@@ -221,6 +250,16 @@ export default function BtcTest() {
           </button>
         ))}
       </nav>
+      {comparison && (
+        <BtcComparisonPanel
+          id={comparison.id}
+          c={comparison.comparison}
+          busy={!!running}
+          onSelect={(strategy) => {
+            void selectStrategy(strategy);
+          }}
+        />
+      )}
       {error && (
         <div className="notice error" role="alert">
           {error}
@@ -331,10 +370,21 @@ export default function BtcTest() {
       {step === 2 && data && (
         <section className="panel btc-section">
           <div className="eyebrow">02 / FROZEN STRATEGY</div>
-          <h2>A transparent first market-only test</h2>
+          <h2>Review the original and revised rules</h2>
           <p>
             Version {BTC_PLAN.version}. One fixed, untrained rule. No parameter search and no news
             inputs. The 50-candle warm-up is included within the six-month range.
+          </p>
+          <p>
+            Revision v2 keeps the same crossover, stop, target and risk rules. It requires a fresh
+            bullish crossover, a close above MA200, MA200 higher than 24 hours earlier, and a 3 ATR
+            target at least three times estimated round-trip costs. It needs 224 completed hours and
+            does not enter just because the first window is bullish.
+          </p>
+          <p>
+            Revision v3 retains v2 and adds signal-candle quality: close in the upper half of a
+            nonzero hourly range and range no larger than 2 ATR14. All three use the same costs,
+            risk limits and exit rules.
           </p>
           <div className="btc-rule-grid">
             <article>
@@ -392,7 +442,16 @@ export default function BtcTest() {
                 void start('run');
               }}
             >
-              Run market-only test
+              Run original v1
+            </button>
+            <button
+              className="button primary"
+              disabled={running}
+              onClick={() => {
+                void start('compare');
+              }}
+            >
+              Run v1 / v2 / v3 comparison
             </button>
           </div>
         </section>
@@ -417,7 +476,7 @@ export default function BtcTest() {
                 <div className="btc-section-head">
                   <div>
                     <div className="eyebrow">03 / FULL-PERIOD RESULTS</div>
-                    <h2>What happened in this simulation</h2>
+                    <h2>What happened · {report.plan.version}</h2>
                     <p>
                       {data && `${date(data.dataset.from)} → ${date(data.dataset.to)}`}. Open BTC is
                       marked at the final close; exit costs on an open position are not charged.
@@ -457,7 +516,13 @@ export default function BtcTest() {
                 <p>
                   Slippage is embedded in fill prices; fees are charged separately. The buy-and-hold
                   comparator has much higher exposure than the strategy. Hourly drawdown can miss
-                  intrabar lows. Trial count: 1 fixed strategy; repeated replay is the same trial.
+                  intrabar lows.{' '}
+                  {comparison
+                    ? comparison.comparison.version === 'btc-comparison.v2'
+                      ? 'One original strategy and two research revisions.'
+                      : 'One original strategy and one research revision.'
+                    : 'One fixed original strategy.'}{' '}
+                  Repeated replay is the same trial.
                 </p>
               </section>
               {decision && bar && (
@@ -516,6 +581,7 @@ export default function BtcTest() {
                     </button>
                   </div>
                   <div className="btc-decision">
+                    {decision.executionNote && <p className="notice">{decision.executionNote}</p>}
                     <h3>{decision.reason}</h3>
                     <p>
                       {decision.action === 'LONG'
@@ -536,6 +602,43 @@ export default function BtcTest() {
                         ['MA20', decision.fast ? money(decision.fast) : 'Warming up'],
                         ['MA50', decision.slow ? money(decision.slow) : 'Warming up'],
                         ['ATR14', decision.atr ? money(decision.atr) : 'Warming up'],
+                        ...(report.plan.version !== 'btc-ma-atr.v1'
+                          ? [
+                              ['MA200', decision.trend ? money(decision.trend) : 'Warming up'],
+                              [
+                                'MA200 rising over 24 hours',
+                                decision.trendRising === null
+                                  ? 'Warming up'
+                                  : decision.trendRising
+                                    ? 'Yes'
+                                    : 'No',
+                              ],
+                              [
+                                'Target / estimated round-trip cost',
+                                decision.rewardCostRatio
+                                  ? Number(decision.rewardCostRatio).toFixed(2) + ' ×'
+                                  : 'Warming up',
+                              ],
+                              ['Entry filter', decision.entryGate ?? 'WARMUP'],
+                            ]
+                          : []),
+                        ...(report.plan.version === 'btc-ma-atr.v3'
+                          ? [
+                              [
+                                'Signal candle range / ATR',
+                                decision.signalRangeAtr
+                                  ? Number(decision.signalRangeAtr).toFixed(2) + ' ×'
+                                  : 'Warming up',
+                              ],
+                              [
+                                'Close location in signal candle',
+                                decision.closeLocation === null ||
+                                decision.closeLocation === undefined
+                                  ? 'Zero range'
+                                  : pct(decision.closeLocation),
+                              ],
+                            ]
+                          : []),
                         ['Planned order', `${decision.quantity} BTC`],
                         [
                           'Stop / target',
@@ -571,7 +674,7 @@ export default function BtcTest() {
                       report.decisions.slice(0, index + 1).map((d) => Number(d.buyHold)),
                       report.decisions.slice(0, index + 1).map(() => 10000),
                     ]}
-                    labels={['Market only', 'Costed buy-and-hold', 'Cash']}
+                    labels={[report.plan.version, 'Costed buy-and-hold', 'Cash']}
                     colors={['#288c80', '#b08b46', '#95a1a2']}
                     caption="Equity through the selected hour · virtual USDT"
                   />

@@ -1,0 +1,14 @@
+**/node_modules
+**/.next
+**/__pycache__
+**/*.tsbuildinfo
+**/*.log
+**/next-env.d.ts
+.git
+.tools
+.env
+.env.*
+!.env.example
+data
+coverage
+.pnpm-store

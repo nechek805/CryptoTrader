@@ -4,6 +4,7 @@ const config: NextConfig = {
   poweredByHeader: false,
   transpilePackages: ['@crypto/contracts'],
   webpack(cfg: { resolve?: { extensionAlias?: Record<string, string[]> } }) {
+    if (process.env.NEWS_BUILD_NO_CACHE === '1') Object.assign(cfg, { cache: false });
     cfg.resolve ??= {};
     cfg.resolve.extensionAlias = { ...cfg.resolve.extensionAlias, '.js': ['.ts', '.tsx', '.js'] };
     return cfg;
